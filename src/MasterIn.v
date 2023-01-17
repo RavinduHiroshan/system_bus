@@ -1,33 +1,13 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 01/16/2023 01:57:45 PM
-// Design Name: 
-// Module Name: MasterIn
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: This MasterInput port module is for the reading the data from slave and display in the LCD display
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
 
 module MasterIn(
     input clk,
     input reset,
-    input tx_done,                                              //Signal from slave after finish a transaction
+    input tx_done,                                              //Signal from the module 
     input slave_valid,                                          //Validate the data transmit by slave
     input rx_data,                                              //Data from the slave
     input [11:0]burst_num,                                      //Burst number when reading burst data
-    input [1:0]instruction,                                     //No idea about this
+    input [1:0]instruction,                                     //Instruction to enable read operation
     
     output reg rx_done,                                         //Output signal to master out when after the rx done
     output reg master_ready,                                    //Master ready signal to slave
@@ -50,7 +30,7 @@ module MasterIn(
         begin
             state <= IDLE;
             new_rx <=0 ;
-            master_ready <=1 ;
+            master_ready <= 1;
             data <= 0;
             rx_done <= 0;
             count_data <= 0 ;
@@ -66,6 +46,7 @@ module MasterIn(
                     if(tx_done==1 && instruction==2'b11)
                     begin
                         state <= HANDSHAKE;
+                        master_ready <= 1;
                     end
                     else
                     begin
