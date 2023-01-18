@@ -1,8 +1,5 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
 // Create Date: 01/16/2023 01:57:45 PM
 // Design Name: 
 // Module Name: MasterIn
@@ -35,7 +32,7 @@ module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
     output reg [DATA_LEN-1:0]data                                        //Output data received from slave
     );
     
-    parameter IDLE = 0, HANDSHAKE = 1, DATARECEIVE = 2, BURSTRECEIVE=3 ;         //States in the state diagram
+    parameter IDLE = 0, HANDSHAKE = 1, DATARECEIVE = 2 ;         //States in the state diagram
     integer count_data = 0, count_burst = 0 ;                    
     
     reg [1:0]state = 0;
@@ -73,11 +70,11 @@ module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
                     end
                     new_rx<=0 ;
                     master_ready <=1 ;
-                    data <= 0;               
+                    data <= data;               
                     rx_done <= 0; 
                     count_data <= 0 ;
                     count_burst <= 0;           
-                    data_store_tem <= 0;
+                    data_store_tem <= data_store_tem;
                 end
                 
                 HANDSHAKE:
@@ -96,15 +93,16 @@ module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
 
                 DATARECEIVE:
                     begin
-                        if (count_data >= DATA_LEN-1)
+                        if (count_data >DATA_LEN-1)
                         begin 
                             count_data <= 0 ;
-
-                            if (count_burst>=burst_num)
+ 
+                            if (count_burst>burst_num)
                             begin
                                 state <= IDLE ;
                                 rx_done <= 1;
-                                count_burst <=0;             
+                                count_burst <=0; 
+          
                             end
 
                             else
@@ -112,13 +110,13 @@ module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
                                state <= DATARECEIVE ;
                                rx_done <= 0;
                                count_burst <= count_burst+1;
-                            end 
 
+                            end 
                             new_rx <=1;
-                            master_ready <= 0;       
+                            master_ready <= 0;
                             data_store_tem[DATA_LEN-1] <= rx_data;
                             data <= data_store_tem;  
-                                                      
+                                                     
                         end
                         else
                         begin
@@ -136,8 +134,6 @@ module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
                         end
             endcase
             
-        end
-
-            
+        end           
    end
 endmodule
