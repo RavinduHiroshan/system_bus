@@ -5,7 +5,6 @@ module arbiter(
     input m2_request,   // Mster 2 request, it should be low during master 2 transactions.
     input m1_slave_select, //After m1_grant, slave address transmits from master
     input m2_slave_select, //After m2_grant, slave address transmits from master
-_
 
     output reg m1_grant,
     output reg m2_grant,
@@ -16,7 +15,7 @@ _
     
     parameter[2:0] IDLE_STATE = 3'd0;
     parameter[2:0] MASTER1_OCCUPPIED_STATE = 3'd1;
-    parameter[2:0] MASTER2_OCCUPPIED_STA TE = 3'd2;
+    parameter[2:0] MASTER2_OCCUPPIED_STATE = 3'd2;
     //parameter[2:0] SLAVE_SELECT = 3'd3;
 
     reg [2:0] state = IDLE_STATE;
