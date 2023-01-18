@@ -20,26 +20,26 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module MasterIn(
+module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
     input clk,
     input reset,
     input tx_done,                                              //Signal from slave after finish a transaction
     input slave_valid,                                          //Validate the data transmit by slave
     input rx_data,                                              //Data from the slave
-    input [11:0]burst_num,                                      //Burst number when reading burst data
-    input [1:0]instruction,                                     //No idea about this
+    input [BURST_LEN-1:0]burst_num,                                      //Burst number when reading burst data
+    input [1:0]instruction,                                     //To initialize the transaction
     
     output reg rx_done,                                         //Output signal to master out when after the rx done
     output reg master_ready,                                    //Master ready signal to slave
     output reg new_rx,                                          //Output signal about new data 
-    output reg [7:0]data                                        //Output data received from slave
+    output reg [DATA_LEN-1:0]data                                        //Output data received from slave
     );
     
-    parameter IDLE = 0, HANDSHAKE = 1, DATARECEIVE = 2 ;         //States in the state diagram
+    parameter IDLE = 0, HANDSHAKE = 1, DATARECEIVE = 2, BURSTRECEIVE=3 ;         //States in the state diagram
     integer count_data = 0, count_burst = 0 ;                    
     
     reg [1:0]state = 0;
-    reg [7:0]data_store_tem;
+    reg [DATA_LEN-1:0]data_store_tem;
 
     integer count = 0;
     integer burst_count = 0;
@@ -73,80 +73,66 @@ module MasterIn(
                     end
                     new_rx<=0 ;
                     master_ready <=1 ;
-                    data <= data;               //Last data received in early transaction
+                    data <= 0;               
                     rx_done <= 0; 
                     count_data <= 0 ;
-                    count_burst <= 0;           //Change bcz ideal state after the end of data receive
-                    data_store_tem <= data_store_tem;
+                    count_burst <= 0;           
+                    data_store_tem <= 0;
                 end
+                
                 HANDSHAKE:
                   begin
                     if(master_ready==1 && slave_valid==1)
                     begin
                         state <= DATARECEIVE;
-                        master_ready <=0 ;
-                        count_data <=  1;                         //Change Bcz at handshake state get the initial bit of data;
-                        data_store_tem[0] <= rx_data;        //Change bcz handshake after the receive data
+                        master_ready <=0 ;       
                     end
                     
                     else
                     begin
-                        state <= HANDSHAKE;
-                        master_ready <=1; 
-                        count_data <=  0;                         //Change Bcz if no handshake then no data 
-                        data_store_tem <= data_store_tem;            
-                    end
-                        new_rx<=0 ;
-                        data <= data;
-                        rx_done <= 0;                        //Change bcz rx_done after finishes  the data receive  
-                        count_burst <= count_burst;                    
+                        state <= HANDSHAKE;           
+                    end                
                   end
+
                 DATARECEIVE:
                     begin
-                        if (count_data >= 7)
+                        if (count_data >= DATA_LEN-1)
                         begin 
                             count_data <= 0 ;
+
                             if (count_burst>=burst_num)
                             begin
                                 state <= IDLE ;
                                 rx_done <= 1;
-                                count_burst <=0;            //Change Bcz burst count tend to 0 when go to idle. 
+                                count_burst <=0;             
                             end
+
                             else
                             begin
-                               state <= HANDSHAKE ;
+                               state <= DATARECEIVE ;
                                rx_done <= 0;
                                count_burst <= count_burst+1;
                             end 
+
                             new_rx <=1;
-                            master_ready <=1 ; 
-                            data <= data_store_tem;        //Change Bcz after every data packet update data output
-                            data_store_tem[7] <= rx_data; 
+                            master_ready <= 0;       
+                            data_store_tem[DATA_LEN-1] <= rx_data;
+                            data <= data_store_tem;  
                                                       
                         end
                         else
                         begin
-                            count_data <= count_data + 1;
-                            state <= DATARECEIVE;
                             data_store_tem[count_data] <= rx_data;
-                            data <= data;	
-                            rx_done <= 0;                 //Change Bcz this do after one data packet receive
-                            new_rx <= 0;                  //Change Bcz this update when output new data from master in port          
-                            master_ready <= 0;
-                            count_burst <= count_burst;
-                         
+                            count_data <= count_data + 1;
+                            state <= DATARECEIVE;                            	
+                            rx_done <= 0;                 
+                            new_rx <= 0;          
+                            master_ready <= 0;                         
                         end
                     end
                     default:
                         begin 
-                            count_data <= count_data;
                             state <= IDLE;
-                            data	<= data;
-                            count_data <= count_data;	
-                            rx_done <= 0;
-                            new_rx <= 0;
-                            master_ready <= 1;
-                            count_burst <= count_burst;
                         end
             endcase
             
