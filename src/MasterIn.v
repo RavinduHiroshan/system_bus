@@ -20,19 +20,19 @@
 module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
     input clk,
     input reset,
-    input tx_done,                                              //Signal from slave after finish a transaction
+    //input tx_done,                                              //Signal from slave after finish a transaction
     input slave_valid,                                          //Validate the data transmit by slave
     input rx_data,                                              //Data from the slave
-    input [BURST_LEN-1:0]burst_num,                                      //Burst number when reading burst data
+    input [BURST_LEN-1:0]burst_num,                             //Burst number when reading burst data
     input [1:0]instruction,                                     //To initialize the transaction
     
     output reg rx_done,                                         //Output signal to master out when after the rx done
     output reg master_ready,                                    //Master ready signal to slave
     output reg new_rx,                                          //Output signal about new data 
-    output reg [DATA_LEN-1:0]data                                        //Output data received from slave
+    output reg [DATA_LEN-1:0]data                               //Output data received from slave
     );
     
-    parameter IDLE = 0, HANDSHAKE = 1, DATARECEIVE = 2 ;         //States in the state diagram
+    parameter IDLE = 0, HANDSHAKE = 1, DATARECEIVE = 2 ;        //States in the state diagram
     integer count_data = 0, count_burst = 0 ;                    
     
     reg [1:0]state = 0;
@@ -60,7 +60,7 @@ module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
             case(state)
                 IDLE:
                 begin
-                    if(tx_done==1 && instruction==2'b11)
+                    if(instruction==2'b11)
                     begin
                         state <= HANDSHAKE;
                     end
