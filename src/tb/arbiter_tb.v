@@ -20,19 +20,17 @@ arbiter arbiter(
 );
 initial begin
     clk = 0;
-    #50
     forever begin
         #(CLOCK_PERIOD/2)
         clk <= ~clk;
     end
 end
 initial begin
-    // #30
-    // m1_request <= 1;
-
-    // #30
-    // m2_request <= 1;
-
+    #(CLOCK_PERIOD)
+    m1_request <= 1;
+    m2_request <= 0;
+    m2_slave_select <= 0;
+    m2_slave_select <= 0;
     // #30
     // transaction_done <= 1;
     // #30
