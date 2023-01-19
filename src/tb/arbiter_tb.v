@@ -26,11 +26,52 @@ initial begin
     end
 end
 initial begin
+    reset <= 0;
+    #(CLOCK_PERIOD*2)
+    m1_request <= 1;
+    reset <= 0;
+    m2_request <= 0;
+    m1_slave_select <= 0;
+    m2_slave_select <= 0;
+    #(CLOCK_PERIOD*2)
+    #(CLOCK_PERIOD/2)
+    m1_slave_select <= 1;
+    m2_slave_select <= 1;
+    #(CLOCK_PERIOD)
+    #(CLOCK_PERIOD)
+    #(CLOCK_PERIOD)
+
     #(CLOCK_PERIOD)
     m1_request <= 1;
-    m2_request <= 0;
+    m2_request <= 1;
+    m1_slave_select <= 0;
     m2_slave_select <= 0;
+    #(CLOCK_PERIOD*2)
+    #(CLOCK_PERIOD/2)
+    m1_slave_select <= 1;
+    m2_slave_select <= 1;
+    
+    #(CLOCK_PERIOD)
+    m1_request <= 0;
+    m2_request <= 1;
+    m1_slave_select <= 1;
+    m2_slave_select <= 1;
+    #(CLOCK_PERIOD*2)
+    #(CLOCK_PERIOD/2)
+    m1_slave_select <= 0;
     m2_slave_select <= 0;
+    #(CLOCK_PERIOD)
+    #(CLOCK_PERIOD)
+
+    #(CLOCK_PERIOD)
+    m1_request <= 1;
+    m2_request <= 1;
+    m1_slave_select <= 0;
+    m2_slave_select <= 0;
+    #(CLOCK_PERIOD*2)
+    #(CLOCK_PERIOD/2)
+    m1_slave_select <= 1;
+    m2_slave_select <= 1;
     // #30
     // transaction_done <= 1;
     // #30
