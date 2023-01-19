@@ -56,6 +56,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
     integer count_data = 0;
     integer count_burst = 0;
     integer burst_count = 0;
+    integer count = 0;
             
     always@(posedge clk or posedge reset) 
     begin
@@ -84,7 +85,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
             case (state)
                 IDLE:
                 begin
-                   if (instruction[1]==1)            //Moving to Wait_arbitor state after sending approval request sent
+                   if ((instruction[1]==1)&&(busy==0))            //Moving to Wait_arbitor state after sending approval request sent
                    begin
                         approval_request<= 1;
                         state <=WAIT_ARBITOR;               
@@ -115,13 +116,21 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                 begin
                     if(approval_grant==1)
                     begin
-                        tx_slave_select <= slave_select[count_slave];
-                        count_slave <= count_slave+1;
-                        if  (count_slave>=SLAVE_LEN)
+                        if(count>0)
                         begin
-                             count_slave<=0; 
-                             state<=  WAIT_SLAVE;   
-                        end  
+                            tx_slave_select <= slave_select[count_slave];
+                            count_slave <= count_slave+1;
+                            if  (count_slave>SLAVE_LEN)
+                            begin
+                                count<=0;
+                                count_slave<=0; 
+                                state<=  WAIT_SLAVE;   
+                            end  
+                        end
+                        else
+                        begin
+                            count<=count+1;
+                        end
                     end 
                     else if (busy==1)
                     begin
@@ -194,7 +203,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                     end
                 end
                
-                READ_DATA_WAITING:              //Data read by masterIn port.. Waiting until masterIn port response
+                READ_DATA_WAITING:              //Data read by masterIn port.  Waiting until masterIn port response
                 begin
                     if (rx_done==1)
                     begin
@@ -210,19 +219,19 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                 begin
                     if(count_address<ADDR_LEN)
                     begin
-                        tx_address <=address[count_address];
-                        count_address<=count_address+1;
+                        tx_address <= address[count_address];
+                        count_address <= count_address+1;
                     end
                     else
                     begin
-                        count_address<=ADDR_LEN+2;
+                        count_address<=ADDR_LEN+3;
                     end
                     
                     if (burst_num==11'd0)
                     begin
                         tx_burst_number<=0;
                     end
-                    else if (count_burst<BURST_LEN)
+                    else if (count_burst<BURST_LEN+1)
                     begin
                         count_burst<=count_burst+1;
                         if (count_burst==1)
@@ -231,23 +240,29 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                         end
                         else 
                         begin
-                           tx_burst_number <= burst_num[count_burst-1]; 
+                           tx_burst_number <= burst_num[count_burst-2]; 
                         end
                     end
                     else
                     begin
-                        count_burst<=BURST_LEN+2;
+                        count_burst<=BURST_LEN+3;
                     end
                     
-                    if(count_data<DATA_LEN) 
-                    begin
-                        master_valid<=1;
-                        tx_data<= data[count_data] ;
+                    if(count_data<DATA_LEN+1) 
+                    begin                        
+                        if(count_data==0)
+                        begin
+                            master_valid<=1;
+                        end
+                        else
+                        begin
+                            tx_data<= data[count_data-1] ;
+                        end                      
                         count_data<= count_data+1;
                     end  
                     else
                     begin
-                        count_data<= DATA_LEN+2;
+                        count_data<= DATA_LEN+3;
                     end 
                     
                     if((count_address>ADDR_LEN)&&(count_burst>BURST_LEN)&&(count_data>DATA_LEN))
@@ -259,7 +274,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                         end
                         else
                         begin
-                           burst_count = burst_num;                  //can do this??
+                           burst_count <= burst_num;                  
                            count_data<=0;
                            state<=WRITE_DATA_BURST;                            
                         end
@@ -272,7 +287,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                     begin
                         if(count_data<DATA_LEN) 
                         begin
-                            master_valid<=1;
+                            // master_valid<=1;
                             tx_data<= data[count_data] ;
                             count_data<= count_data+1;
                         end  
