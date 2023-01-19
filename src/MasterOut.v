@@ -28,7 +28,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
     input [DATA_LEN-1:0]data,                   //From switches
     input [BURST_LEN-1:0]burst_num,             //From switches
     input [SLAVE_LEN-1:0]slave_select,          //From switches
-    input [1:0]instruction,                     //Forinitialize the transaction
+    input [1:0]instruction,                     //For initialize the transaction
     input approval_grant,                       //From arbitor
     input busy,                                 //From arbitor    
     input slave_ready,                          //From Slave
@@ -297,5 +297,4 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
         end
     end
        
-
 endmodule
