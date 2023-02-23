@@ -20,7 +20,7 @@
 module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
     input clk,
     input reset,
-    //input tx_done,                                              //Signal from slave after finish a transaction
+    //input tx_done,                                            //Signal from slave after finish a transaction
     input slave_valid,                                          //Validate the data transmit by slave
     input rx_data,                                              //Data from the slave
     input [BURST_LEN-1:0]burst_num,                             //Burst number when reading burst data
