@@ -3,6 +3,7 @@ module slave_in #(
     parameter DATA_LEN=8,
     parameter BURST_LEN=12
 ) (
+
     input clk,
     input reset,
     input rx_data,
@@ -16,11 +17,10 @@ module slave_in #(
     input slave_busy,
     input slave_read_done,
 
-    output reg address[11:0],
-    output reg data[7:0],
-    output reg burst_count[11:0],
+    output reg[11:0]address,
+    output reg[7:0]data,
+    output reg[11:0]burst_count,
     output reg new_data,
-
     output reg slave_ready
 );
 
@@ -46,17 +46,16 @@ module slave_in #(
     begin
         if(reset == 1'b1)
         begin
-            data_read           = 0;
-            address_read        = 0;
-            burst_read          = 0;
-            transaction_ready   = 0;
-            burst_read          = 0;
-            burst_num           = 0;    
+            data_read           <= 0;
+            address_read        <= 0;
+            burst_read          <= 0;
+            transaction_ready   <= 0;
+            burst_read          <= 0;
+            burst_num           <= 0;    
         end
         else
         begin
-            if((write_enable == 1'b1) && 
-            ((state != DATA_COLLECT_STATE)||(state != DATA_BURST_STATE)))
+            if((write_enable == 1'b1) && ((state != DATA_COLLECT_STATE)||(state != DATA_BURST_STATE)))
             begin
                 if(slave_busy == 0)
                 begin
