@@ -24,7 +24,9 @@ WAIT_HANDSHAKE      = 3,
 DATA_RECIEVE 	    = 4,
 DATA_BURST_GAP      = 5,
 DATA_RECIEVE_BURST  = 6,
-READ_BURST_WAIT_HANDSHAKE = 7;
+READ_BURST_WAIT_HANDSHAKE = 7,
+BURST_BIT_RECIEVE = 8,
+NO_BURST = 9;
  
 reg [3:0]addr_counter = 4'd0;
 reg [3:0]addr_state = IDLE;
@@ -45,7 +47,6 @@ reg addr_done = 0;
 reg data_done = 0;
 
 assign slave_ready = data_idle & addr_idle;
-assign rx_done = addr_done;
 
 wire handshake = master_valid & slave_ready;
 
@@ -251,7 +252,7 @@ begin
 				begin
                     if(rx_burst == 1)
                     begin
-                        burst[burst_bit_counter] <= rx_burst;
+                        burst_num[burst_bit_counter] <= rx_burst;
 					    burst_state <= BURST_BIT_RECIEVE;
 					    burst_bit_counter <= burst_bit_counter + 1;
                     end
@@ -271,14 +272,14 @@ begin
 			begin
 				if (burst_bit_counter < 4'd12)    // change to 13 ?
 				begin
-					burst[burst_bit_counter] <= rx_burst;
+					burst_num[burst_bit_counter] <= rx_burst;
 					burst_bit_counter <= burst_bit_counter + 1;
 					burst_state <= burst_state;
 				end
 				else 
 				begin
 					burst_state <= IDLE;
-                    burst[burst_bit_counter] <= rx_burst;
+                    burst_num[burst_bit_counter] <= rx_burst;
 					burst_bit_counter <= 0;
 				end
 			end
