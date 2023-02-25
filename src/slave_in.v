@@ -32,6 +32,10 @@ reg [3:0]addr_state = IDLE;
 reg [3:0]data_state = IDLE;
 reg [2:0]data_counter = 3'd0;
 
+reg [3:0]burst_state = IDLE;
+reg [3:0]burst_bit_counter = 4'd0;
+
+
 reg[11:0]burst_counter = 12'd0;
 reg[12:0]burst_num = 13'd0;
 
@@ -229,4 +233,71 @@ begin
     end
 end
 
+
+//13 bit burst from rx_burst
+always @ (posedge clk or posedge reset) 
+begin
+	if (reset)
+	begin
+		burst_state <= IDLE;
+		burst_bit_counter <= 0;
+	end
+	else
+	begin
+		case (burst_state)
+			IDLE:
+			begin
+				if ((handshake) && (read_en || write_en))
+				begin
+                    if(rx_burst == 1)
+                    begin
+                        burst[burst_bit_counter] <= rx_burst;
+					    burst_state <= BURST_BIT_RECIEVE;
+					    burst_bit_counter <= burst_bit_counter + 1;
+                    end
+                    else
+                    begin
+                        burst_state <= NO_BURST;
+                    end
+					
+				end
+				else
+				begin
+					burst_state <= burst_state;
+					burst_bit_counter <= 0;
+				end
+			end
+			BURST_BIT_RECIEVE:
+			begin
+				if (burst_bit_counter < 4'd12)    // change to 13 ?
+				begin
+					burst[burst_bit_counter] <= rx_burst;
+					burst_bit_counter <= burst_bit_counter + 1;
+					burst_state <= burst_state;
+				end
+				else 
+				begin
+					burst_state <= IDLE;
+                    burst[burst_bit_counter] <= rx_burst;
+					burst_bit_counter <= 0;
+				end
+			end
+            NO_BURST:
+            begin
+                if(read_en == 0 || write_en == 0)
+                begin
+                    burst_state <= IDLE;
+                end   
+                else
+                begin
+                    burst_state <= NO_BURST;
+                end
+            end
+			default:
+			begin
+				burst_state <= IDLE;
+			end
+		endcase
+	end
+end
 endmodule
