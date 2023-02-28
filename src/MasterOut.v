@@ -30,7 +30,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
     input [SLAVE_LEN-1:0]slave_select,          //From switches
     input [1:0]instruction,                     //For initialize the transaction
     input approval_grant,                       //From arbitor
-    input busy,                                 //From arbitor    
+    input busy,                                 //From arbitor (If other master is occupied busy == 1)    
     input slave_ready,                          //From Slave
     input rx_done,                              //From Master In
     
@@ -95,7 +95,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                         state <=IDLE;
                         approval_request<=0;
                    end
-                   tx_slave_select <=0;
+                   tx_slave_select <= 0;
                    master_ready <= 1;
                    master_valid <= 0;
                    tx_address <=0;
@@ -112,14 +112,14 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                    burst_count = 0;
                 end
                 
-                WAIT_ARBITOR:                                  //Wait until arbitor ready signal 
+                WAIT_ARBITOR:                                               //Wait until arbitor ready signal 
                 begin
                     if(approval_grant==1)
                     begin
-                        if(count>0)
+                        if(count>0)                                         //Send the address of the slave after one cycle of getting access to the bus
                         begin
-                            tx_slave_select <= slave_select[count_slave];
-                            count_slave <= count_slave+1;
+                            tx_slave_select <= slave_select[count_slave];   //Send the address of the slave
+                            count_slave <= count_slave + 1;
                             if  (count_slave>SLAVE_LEN)
                             begin
                                 count<=0;
@@ -134,13 +134,13 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                     end 
                     else 
                     begin
-                        state <=WAIT_ARBITOR;
+                        state <= WAIT_ARBITOR;
                     end
                 end
                 
                 WAIT_SLAVE:
                 begin
-                    if(busy==0)
+                    if((busy==0)&&(slave_ready==1))
                         begin
                             count_slave_wait_time<=0;
                             master_ready <= 0;                           //Bcz master is occupied by a slave for transaction
@@ -155,7 +155,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                                 read_en <= 1 ;
                             end
                         end
-                    else if (count_slave_wait_time>10)                //Wait 10 clk cycles until slave ready. Otherwise stop transaction move to IDEAL state
+                    else if (count_slave_wait_time>10)                  //Wait 10 clk cycles until slave ready. Otherwise stop transaction move to IDEAL state
                         begin
                             state <=IDLE;
                             count_slave_wait_time<=0;
@@ -214,7 +214,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                     end
                 end
                
-                READ_DATA_WAITING:              //Data read by masterIn port.  Waiting until masterIn port response
+                READ_DATA_WAITING:              //Data read by masterIn port.  Wait until masterIn port response
                 begin
                     if (rx_done==1)
                     begin
