@@ -22,6 +22,17 @@ module MasterOut_tb;
     wire read_en ;  
 
     MasterOut MasterOut(
+        .clk(clk),
+        .reset(reset),
+        .address(address),
+        .data(data),
+        .burst_num(burst_number),
+        .slave_select(slave_select),
+        .approval_grant(approval_grant),
+        .busy(busy),
+        .slave_ready(slave_ready),
+        .rx_done(rx_done),
+
         .approval_request(approval_request) ,
         .tx_slave_select(tx_slave_select) ,
         .master_ready(master_ready) ,
@@ -78,17 +89,19 @@ reset<=1;
 //    slave_ready<=0;
 
 
-    #30     //Write Operation
+    #CLOCK_PERIOD     //Write Operation
+    reset<=0;
     instruction <= 2'b10 ;
     slave_select <= 2'b10 ;
     address <= 12'd5459 ;
     burst_num <= 12'd00 ;
     data <= 8'd09;
-
-    #20
     approval_grant<=1;
+    busy <= 0;
+    rx_done <= 0;
 
-    #20
+    #CLOCK_PERIOD
+
     slave_ready<=1;
 
     #150
