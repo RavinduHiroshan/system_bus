@@ -45,35 +45,37 @@ end
 initial begin
     $display($time ,"Starting time of simulation");
 
-    #30                      //Read Operation
-    instruction <= 2'b11;
-    slave_select <= 2'b11;
-    address <= 12'd5459;
-    burst_num <= 12'd03;
 
-    #20
-    busy<=1;
+reset<=1;
+//    #30                      //Read Operation
+//    instruction <= 2'b11;
+//    slave_select <= 2'b11;
+//    address <= 12'd5459;
+//    burst_num <= 12'd03;
 
-    #20
-    busy<=0;
-    approval_grant<=1;
+//    #20
+//    busy<=1;
 
-    #20
-    slave_ready<=1;
+//    #20
+//    busy<=0;
+//    approval_grant<=1;
 
-    #150
-    rx_done<=1;
+//    #20
+//    slave_ready<=1;
 
-    #30
-    reset<=1;
+//    #150
+//    rx_done<=1;
 
-    #30
-    instruction <= 2'b00;
-    slave_select <= 2'b00;
-    address <= 11'b00;
-    burst_num <= 11'd00;
-    approval_grant<=0;
-    slave_ready<=0;
+//    #30
+//    reset<=1;
+
+//    #30
+//    instruction <= 2'b00;
+//    slave_select <= 2'b00;
+//    address <= 11'b00;
+//    burst_num <= 11'd00;
+//    approval_grant<=0;
+//    slave_ready<=0;
 
 
     #30     //Write Operation
@@ -81,6 +83,7 @@ initial begin
     slave_select <= 2'b10 ;
     address <= 12'd5459 ;
     burst_num <= 12'd00 ;
+    data <= 8'd09;
 
     #20
     approval_grant<=1;
@@ -91,13 +94,13 @@ initial begin
     #150
     reset<=1;
 
-    #30
-    instruction <= 2'b00;
-    slave_select <= 2'b00;
-    address <= 11'b00;
-    burst_num <= 11'd00;
-    approval_grant<=0;
-    slave_ready<=0;
+//    #30
+//    instruction <= 2'b00;
+//    slave_select <= 2'b00;
+//    address <= 11'b00;
+//    burst_num <= 11'd00;
+//    approval_grant<=0;
+//    slave_ready<=0;
 
 
 end

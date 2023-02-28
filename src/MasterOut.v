@@ -73,12 +73,12 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
             tx_done <=0;
             write_en <=0;
             read_en <=0;
-            count_slave = 0;
-            count_slave_wait_time = 0;
-            count_address = 0;
-            count_data = 0;
-            count_burst = 0;
-            burst_count = 0;
+            count_slave <= 0;
+            count_slave_wait_time <= 0;
+            count_address <= 0;
+            count_data <= 0;
+            count_burst <= 0;
+            burst_count <= 0;
         end
         else
         begin
