@@ -45,7 +45,7 @@ end
 initial begin
     $display($time ,"Starting time of simulation");
 
-    #30     //Read Operation
+    #30                      //Read Operation
     instruction <= 2'b11;
     slave_select <= 2'b11;
     address <= 12'd5459;

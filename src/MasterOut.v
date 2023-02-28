@@ -177,23 +177,24 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                         end
                         else
                         begin
-                            count_address<=ADDR_LEN+2;
+                            count_address <= ADDR_LEN+2;
                         end
                         
                         if (burst_num==11'd0)
                         begin
                             tx_burst_number<=0;
                         end
-                        else if (count_burst<BURST_LEN)
+                        else if (count_burst<BURST_LEN+1)
                         begin
-                            count_burst<=count_burst+1;
-                            if (count_burst==1)
+                            if (count_burst==0)
                             begin
                                 tx_burst_number<=1;
+                                count_burst<=count_burst+1;
                             end
                             else 
                             begin
                                 tx_burst_number <= burst_num[count_burst-1]; 
+                                count_burst<=count_burst+1;                                
                             end
                         end
                         else
@@ -228,7 +229,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                 
                 WRITE_DATA:
                 begin
-                    if (slave_read==1)
+                    if (slave_ready==1)
                     begin
                         if(count_address < ADDR_LEN)
                         begin
@@ -237,7 +238,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                         end
                         else
                         begin
-                            count_address<=ADDR_LEN+3;
+                            count_address<=ADDR_LEN+2;
                         end
                         
                         if (burst_num==11'd0)
@@ -245,27 +246,28 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                             tx_burst_number<=0;
                         end
                         else if (count_burst<BURST_LEN+1)
-                        begin
-                            count_burst<=count_burst+1;
-                            if (count_burst==1)
+                        begin                           
+                            if (count_burst==0)
                             begin
                                 tx_burst_number<=1;
+                                count_burst<=count_burst+1;
                             end
                             else 
                             begin
-                            tx_burst_number <= burst_num[count_burst-2]; 
+                                tx_burst_number <= burst_num[count_burst-1]; 
+                                count_burst <= count_burst+1;
                             end
                         end
                         else
                         begin
-                            count_burst<=BURST_LEN+3;
+                            count_burst <= BURST_LEN+2;
                         end
                         
                         if(count_data<DATA_LEN+1) 
                         begin                        
                             if(count_data==0)
                             begin
-                                master_valid <= 1 ;
+                                master_valid <= 1 ;                  //Data transfer after the master valid signal
                             end
                             else
                             begin
@@ -275,7 +277,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                         end  
                         else
                         begin
-                            count_data<= DATA_LEN+3;
+                            count_data<= DATA_LEN+2;
                         end 
                         
                         if((count_address>ADDR_LEN)&&(count_burst>BURST_LEN)&&(count_data>DATA_LEN))
@@ -304,15 +306,22 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                 
                 WRITE_DATA_BURST:
                 begin
-                    if(slave_read==1)
+                    if(slave_ready==1)
                     begin
                         if(burst_count>1)
                         begin
-                            if(count_data<DATA_LEN) 
+                            if(count_data<DATA_LEN+1)
                             begin
-                                // master_valid<=1;
-                                tx_data<= data[count_data] ;
-                                count_data<= count_data+1  ;
+                                if(count_data==0) 
+                                begin
+                                    master_valid <= 1;
+                                    count_data <= count_data+1  ;
+                                end
+                                else
+                                begin
+                                    tx_data <= data[count_data-1] ;
+                                    count_data <= count_data + 1  ;
+                                end
                             end  
                             else
                             begin
@@ -323,7 +332,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
 
                         else
                         begin
-                            tx_done<=1;                                 //Over the writing transmission when no burst 
+                            tx_done<=1;                                 //Over the writing transmission when there is no burst 
                             state<=IDLE;
                         end
                     end
