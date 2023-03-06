@@ -11,6 +11,10 @@ wire slave_ready, rx_done;
 wire [11:0]address;
 wire [7:0]data;
 
+reg [7:0]data_stream = 8'b10111101;
+reg [11:0]address_stream = 12'b101011011101;
+reg [12:0]burst_stream = 13'b1010110101101;
+
 slave_in_port slave_in (
 .clk(clk), 
 .reset(reset),
@@ -36,14 +40,32 @@ initial begin
     end
 end
 
+
+initial begin
+    rx_data <= 0;
+    for (reg i=0; i<8; i=i+1)
+    begin
+        rx_data <= data_stream[i];
+    end
+end
+
+initial begin
+    rx_address <= 0;
+    #(CLOCK_PERIOD*5)
+    for (reg i=0; i<12; i=i+1)
+    begin
+        #(CLOCK_PERIOD)
+        rx_address <= address_stream[i];
+    end
+
+end
+
 initial begin
     reset = 0;
     #(CLOCK_PERIOD)
-    rx_data = 1;
-    rx_burst = 0;
-    rx_address = 1;
-    write_en = 1;
-    master_valid = 1;
+    rx_burst <= 0;
+    write_en <= 1;
+    master_valid <= 1;
 
 end
 
