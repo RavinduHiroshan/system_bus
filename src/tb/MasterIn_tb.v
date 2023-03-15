@@ -38,6 +38,10 @@ end
 initial begin
     $display($time ,"Starting time of simulation");
 
+    reset<=0;
+    #30
+    reset<=1;
+
     #30                        //Normal Read operation
     instruction <= 2'b11;
     burst_num <= 11'd0;

@@ -45,14 +45,14 @@ module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
     begin 
         if(reset)
         begin
-            state <= IDLE;
-            new_rx <=0 ;
-            master_ready <=1 ;
-            data <= 0;
-            rx_done <= 0;
+            state <= IDLE ;
+            new_rx <= 0 ;
+            master_ready <= 1 ;
+            data <= 0 ;
+            rx_done <= 0 ;
             count_data <= 0 ;
-            count_burst <= 0;
-            data_store_tem <=0;
+            count_burst <= 0 ;
+            data_store_tem <= 0 ;
         end
                 
         else

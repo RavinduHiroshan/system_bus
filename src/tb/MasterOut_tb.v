@@ -56,8 +56,11 @@ end
 initial begin
     $display($time ,"Starting time of simulation");
 
-
+reset<=0;
+#30
 reset<=1;
+
+
 //    #30                      //Read Operation
 //    instruction <= 2'b11;
 //    slave_select <= 2'b11;
@@ -91,18 +94,21 @@ reset<=1;
 
     #CLOCK_PERIOD     //Write Operation
     reset<=0;
+
+    #CLOCK_PERIOD
     instruction <= 2'b10 ;
     slave_select <= 2'b10 ;
     address <= 12'd5459 ;
     burst_num <= 12'd00 ;
-    data <= 8'd09;
-    approval_grant<=1;
+    data <= 8'd09 ;
+    approval_grant <= 1 ;
+    busy <= 0 ;
+    rx_done <= 0 ;
+
+    #30
+
+    slave_ready <= 1;
     busy <= 0;
-    rx_done <= 0;
-
-    #CLOCK_PERIOD
-
-    slave_ready<=1;
 
     #150
     reset<=1;

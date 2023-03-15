@@ -19,7 +19,6 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_LEN=8, parameter BURST_LEN=12)(
 
     input clk,
@@ -58,25 +57,25 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
     integer burst_count = 0;
     integer count = 0;
             
-    always@(posedge clk or posedge reset) 
+    always @ (posedge clk or posedge reset) 
     begin
-        if(reset)
+        if(reset==1)
         begin
-            state <=IDLE;
-            approval_request<=0;
-            tx_slave_select <=0;
-            master_ready <= 1;
-            master_valid <= 0;
+            state <= IDLE;
+            approval_request <= 0 ;
+            tx_slave_select <=0 ;
+            master_ready <= 1 ;
+            master_valid <= 0 ;
             tx_address <=0;
             tx_data <=0;
-            tx_burst_number<=0;
+            tx_burst_number <= 0;
             tx_done <=0;
             write_en <=0;
             read_en <=0;
             count_slave <= 0;
             count_slave_wait_time <= 0;
             count_address <= 0;
-            count_data <= 0;
+            count_data <= 0 ;
             count_burst <= 0;
             burst_count <= 0;
         end
@@ -88,7 +87,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                    if ((instruction[1]==1)&&(busy==0))            //Moving to Wait_arbitor state after sending approval request sent
                    begin
                         approval_request<= 1;
-                        state <=WAIT_ARBITOR;               
+                        state <= WAIT_ARBITOR;               
                    end
                    else
                    begin
@@ -98,18 +97,19 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                    tx_slave_select <= 0;
                    master_ready <= 1;
                    master_valid <= 0;
-                   tx_address <=0;
-                   tx_data <=0;
+                   tx_address <= tx_address;
+                   tx_data <= tx_data;
                    tx_burst_number<=0;
                    tx_done <=0;
                    write_en <=0;
                    read_en <=0;
-                   count_slave = 0;
-                   count_slave_wait_time = 0;
-                   count_address = 0;
-                   count_data = 0;
-                   count_burst = 0;
-                   burst_count = 0;
+                   count_slave <= 0;
+                   count_slave_wait_time <= 0;
+                   count_address <= 0;
+                   count_data <= 0;
+                   count_burst <= 0;
+                   burst_count <= 0;
+
                 end
                 
                 WAIT_ARBITOR:                                               //Wait until arbitor ready signal 
@@ -122,9 +122,9 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                             count_slave <= count_slave + 1;
                             if  (count_slave>SLAVE_LEN)
                             begin
-                                count<=0;
-                                count_slave<=0; 
-                                state<=  WAIT_SLAVE;   
+                                count <= 0;
+                                count_slave <= 0; 
+                                state <=  WAIT_SLAVE;   
                             end  
                         end
                         else
@@ -143,7 +143,7 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                     if((busy==0)&&(slave_ready==1))
                         begin
                             count_slave_wait_time<=0;
-                            master_ready <= 0;                           //Bcz master is occupied by a slave for transaction
+                            master_ready <= 0;                          //Bcz master is occupied by a slave for transaction
                             if (instruction[0]==0)
                             begin
                                 state<=WRITE_DATA;
