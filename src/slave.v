@@ -19,10 +19,10 @@ module slave(
 	// output tx_data,
 	);
 
-	wire address;
+	wire [0:11]address;
 	wire [0:7]datain;
 	wire data_ready;
-	wire data;
+	wire [0:7]data;
 	
 
 
