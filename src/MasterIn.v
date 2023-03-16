@@ -25,6 +25,7 @@ module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
     input rx_data,                                              //Data from the slave
     input [BURST_LEN-1:0]burst_num,                             //Burst number when reading burst data
     input [1:0]instruction,                                     //To initialize the transaction
+    input approval_grant,                                       //From arbitor
     
     output reg rx_done,                                         //Output signal to master out when after the rx done
     output reg master_ready,                                    //Master ready signal to slave
@@ -53,6 +54,8 @@ module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
             count_data <= 0 ;
             count_burst <= 0 ;
             data_store_tem <= 0 ;
+            burst_count<=0;
+            count<=0;
         end
                 
         else
@@ -74,59 +77,79 @@ module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
                     rx_done <= 0; 
                     count_data <= 0 ;
                     count_burst <= 0;           
-                    data_store_tem <= data_store_tem;
+                    data_store_tem <= data_store_tem ;
                 end
                 
                 HANDSHAKE:
                   begin
-                    if(master_ready==1 && slave_valid==1)
-                    begin
-                        state <= DATARECEIVE;
-                        master_ready <=0 ;       
-                    end
-                    
+                    if(approval_grant==1)
+                        begin
+                            if(master_ready==1 && slave_valid==1)
+                            begin
+                                state <= DATARECEIVE ;
+                                master_ready <= 1 ;  
+                                data_store_tem[count_data] <= rx_data ;  
+                                count_data <= count_data + 1 ; 
+                                count_burst <= count_burst + 1 ;  
+                            end
+                            
+                            else
+                            begin
+                                state <= HANDSHAKE;           
+                            end
+                        end 
                     else
                     begin
-                        state <= HANDSHAKE;           
-                    end                
+                        state <= IDLE;
+                    end               
                   end
 
                 DATARECEIVE:
                     begin
-                        if (count_data >DATA_LEN-1)
-                        begin 
-                            count_data <= 0 ;
- 
-                            if (count_burst>burst_num)
+                        if(approval_grant==1)
                             begin
-                                state <= IDLE ;
-                                rx_done <= 1;
-                                count_burst <=0; 
-          
-                            end
+                            if (count_data >DATA_LEN-1)
+                            begin 
+                                count_data <= 1 ;  
+                                if (count_burst>burst_num)
+                                begin
+                                    state <= IDLE ;
+                                    rx_done <= 1;
+                                    count_burst <=0; 
+                                    data <= data_store_tem; 
+                                    data_store_tem[7:0] <= 0;      
+                                end
 
+                                else
+                                begin
+                                    if (slave_valid==1)
+                                    begin
+                                        state <= DATARECEIVE ;
+                                        rx_done <= 0;
+                                        count_burst <= count_burst+1;
+                                        new_rx <= 1;
+                                        data <= data_store_tem;
+                                        data_store_tem[count_data-1] <= rx_data;
+                                        data_store_tem[7:1] <= 0;
+                                    end
+                                end  
+                                                        
+                            end
                             else
                             begin
-                               state <= DATARECEIVE ;
-                               rx_done <= 0;
-                               count_burst <= count_burst+1;
-
-                            end 
-                            new_rx <=1;
-                            master_ready <= 0;
-                            data_store_tem[DATA_LEN-1] <= rx_data;
-                            data <= data_store_tem;  
-                                                     
+                                data_store_tem[count_data] <= rx_data;
+                                count_data <= count_data + 1;
+                                state <= DATARECEIVE;                            	
+                                rx_done <= 0;                 
+                                new_rx <= 0;          
+                                master_ready <= 1;                         
+                            end
                         end
                         else
                         begin
-                            data_store_tem[count_data] <= rx_data;
-                            count_data <= count_data + 1;
-                            state <= DATARECEIVE;                            	
-                            rx_done <= 0;                 
-                            new_rx <= 0;          
-                            master_ready <= 0;                         
+                            state <= IDLE;
                         end
+
                     end
                     default:
                         begin 
