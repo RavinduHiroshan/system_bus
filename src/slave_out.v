@@ -26,8 +26,10 @@ reg [3:0]data_counter = 4'd0;
 always @ (posedge clk or posedge reset) 
 begin
 	if (reset)
+	begin
 		data_state <= IDLE;
 		slave_valid <= 0;
+	end
 	else
 	begin 
 		case (data_state)

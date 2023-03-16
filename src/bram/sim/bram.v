@@ -1,7 +1,7 @@
 //Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
-//Date        : Tue Mar 14 21:55:45 2023
+//Date        : Wed Mar 15 14:31:39 2023
 //Host        : Hiroshan-Laptop running 64-bit major release  (build 9200)
 //Command     : generate_target bram.bd
 //Design      : bram
