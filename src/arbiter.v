@@ -3,8 +3,7 @@ module arbiter(
     input reset, // system reset
     input m1_request,   // Mster 1 request, it should be high during master 1 transactions.
     input m2_request,   // Mster 2 request, it should be low during master 2 transactions.
-    input m1_slave_select, //After m1_grant, slave address transmits from master
-    input m2_slave_select, //After m2_grant, slave address transmits from master
+    input slave_select,
 
     output reg m1_grant,
     output reg m2_grant,
@@ -39,30 +38,21 @@ module arbiter(
             if((m1_request == 1'b1) && (state != MASTER1_OCCUPPIED_STATE))
             begin
                 state <= MASTER1_OCCUPPIED_STATE;
-                m1_grant   <= 1;
-                m2_grant   <= 0;
-                busy       <= 1;
-                bus_grant  <= 2'b01;
                 slave_read <= 0; 
             end
             else if ((m2_request == 1'b1) && (m1_request == 1'b0) && (state != MASTER2_OCCUPPIED_STATE))
             begin
                 state <= MASTER2_OCCUPPIED_STATE;
-                m1_grant   <= 0;
-                m2_grant   <= 1;
-                busy       <= 1;
-                bus_grant  <= 2'b10;
                 slave_read <= 0; 
             end
             else if ((m2_request == 1'b0) && (m1_request == 1'b0))
             begin 
                 state <= IDLE_STATE;
-                m1_grant   <= 0;
-                m2_grant   <= 0;
-                busy       <= 0;
-                bus_grant  <= 2'b0;
-                slave_grant<= 2'b0;  
                 slave_read <= 0; 
+            end
+            else
+            begin
+                state <= state;
             end
         end
     end
@@ -70,29 +60,49 @@ module arbiter(
     always @(posedge clk) 
     begin
         case(state)
+        IDLE_STATE: begin
+            m1_grant   <= 0;
+            m2_grant   <= 0;
+            busy       <= 0;
+            bus_grant  <= 2'b0;
+            slave_grant<= 2'b0;  
+        end
         MASTER1_OCCUPPIED_STATE :begin
-            if(slave_read < 2)
-            begin
-                slave_grant[slave_read] <= m1_slave_select;
-                slave_read <= slave_read + 1;
+            m1_grant   <= 1;
+            m2_grant   <= 0;
+            busy       <= 1;
+            bus_grant  <= 2'b01;
+            if ((slave_select == 1) || (slave_read > 0)) begin
+                if(slave_read < 2)
+                    begin
+                        slave_grant[slave_read] <= slave_select;
+                        slave_read <= slave_read + 1;
+                    end
+                    else
+                    begin
+                        busy     <= 0;
+                    end
             end
-            else if(slave_read == 2)
-            begin
-                busy     <= 0;
-                slave_read <= 3;
-            end
-            end
+        end
         MASTER2_OCCUPPIED_STATE :begin
-            if(slave_read < 2)
-            begin
-                slave_grant[slave_read] <= m2_slave_select;
-                slave_read <= slave_read + 1;
+            m1_grant   <= 0;
+            m2_grant   <= 1;
+            busy       <= 1;
+            bus_grant  <= 2'b10;
+            if ((slave_select == 1) || (slave_read > 0)) begin
+                if(slave_read < 2)
+                    begin
+                        slave_grant[slave_read] <= slave_select;
+                        slave_read <= slave_read + 1;
+                    end
+                    else
+                    begin
+                        busy     <= 0;
+                    end
             end
-            else if(slave_read == 2)
-            begin
-                busy     <= 0;
-                slave_read <= 3;
-            end
+        end
+        default: begin
+                state <= IDLE_STATE;
             end
         endcase
 end
