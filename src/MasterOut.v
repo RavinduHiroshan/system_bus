@@ -118,14 +118,24 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                     begin
                         if(count>0)                                         //Send the address of the slave after one cycle of getting access to the bus
                         begin
-                            tx_slave_select <= slave_select[count_slave];   //Send the address of the slave
-                            count_slave <= count_slave + 1;
-                            if  (count_slave>SLAVE_LEN)
+                            if (count==1)
                             begin
+                                tx_slave_select<= 1 ;
+                                count <= count+1 ;
+                            end
+                            else if ((count==2)&&(count==3))
+                            begin
+                                tx_slave_select <= slave_select[count_slave];   //Send the address of the slave
+                                count_slave <= count_slave + 1;
+                                count<=count+1;
+                            end
+                            else if (count==4)
+                            begin
+                                tx_slave_select<= 0 ;
                                 count <= 0;
                                 count_slave <= 0; 
-                                state <=  WAIT_SLAVE;   
-                            end  
+                                state <=  WAIT_SLAVE;
+                            end
                         end
                         else
                         begin
@@ -140,206 +150,244 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                 
                 WAIT_SLAVE:
                 begin
-                    if((busy==0)&&(slave_ready==1))
-                        begin
-                            count_slave_wait_time<=0;
-                            master_ready <= 0;                          //Bcz master is occupied by a slave for transaction
-                            if (instruction[0]==0)
+                    if (approval_grant==1)
+                    begin
+                        if(busy==0)
                             begin
-                                state<=WRITE_DATA;
-                                write_en <= 1 ;
+                                count_slave_wait_time <= 0;
+                                master_ready <= 1;                          //Bcz master is occupied by a slave for transaction
+                                if (instruction[0]==0)
+                                begin
+                                    state<=WRITE_DATA;
+                                    write_en <= 1 ;
+                                end
+                                else if(instruction[0]==1)
+                                begin
+                                    state<=READ_DATA;
+                                    read_en <= 1 ;
+                                end
                             end
-                            else if(instruction[0]==1)
+                        else if (count_slave_wait_time>10)                  //Wait 10 clk cycles until slave ready. Otherwise stop transaction move to IDEAL state
                             begin
-                                state<=READ_DATA;
-                                read_en <= 1 ;
+                                state <=IDLE;
+                                count_slave_wait_time<=0;
                             end
-                        end
-                    else if (count_slave_wait_time>10)                  //Wait 10 clk cycles until slave ready. Otherwise stop transaction move to IDEAL state
-                        begin
-                            state <=IDLE;
-                            count_slave_wait_time<=0;
-                        end
+                        else
+                            begin
+                                count_slave_wait_time = count_slave_wait_time+1; 
+                            end
+                    end
                     else
-                        begin
-                            count_slave_wait_time = count_slave_wait_time+1; 
-                        end
+                    begin
+                        state <= IDLE;
+                    end
                 end
                 
                 READ_DATA:
                 begin
-                    if(slave_ready==1)
+                    if(approval_grant==1)
                     begin
-                        if(count_address<ADDR_LEN)
+                        if(slave_ready==1)
                         begin
-                            tx_address <= address[count_address];
-                            count_address <= count_address+1;
+                            if(count_address<ADDR_LEN)
+                            begin
+                                master_valid <= 1 ;                  
+                                tx_address <= address[count_address];
+                                count_address <= count_address + 1;
+                            end
+                            else
+                            begin
+                                count_address <= ADDR_LEN + 2;
+                            end
+                            
+                            if (burst_num==11'd0)
+                            begin
+                                tx_burst_number<=0;
+                            end
+                            else if (count_burst<BURST_LEN+1)
+                            begin
+                                if (count_burst==0)
+                                begin
+                                    tx_burst_number<=1;
+                                    count_burst<=count_burst+1;
+                                end
+                                else 
+                                begin
+                                    tx_burst_number <= burst_num[count_burst-1]; 
+                                    count_burst<=count_burst+1;                                
+                                end
+                            end
+                            else
+                            begin
+                                count_burst<=BURST_LEN+2;
+                            end
+                            
+                            if((count_address>ADDR_LEN)&&(count_burst>BURST_LEN))
+                            begin
+                                state<=READ_DATA_WAITING;
+                            end
                         end
                         else
                         begin
-                            count_address <= ADDR_LEN+2;
-                        end
-                        
-                        if (burst_num==11'd0)
-                        begin
-                            tx_burst_number<=0;
-                        end
-                        else if (count_burst<BURST_LEN+1)
-                        begin
-                            if (count_burst==0)
-                            begin
-                                tx_burst_number<=1;
-                                count_burst<=count_burst+1;
-                            end
-                            else 
-                            begin
-                                tx_burst_number <= burst_num[count_burst-1]; 
-                                count_burst<=count_burst+1;                                
-                            end
-                        end
-                        else
-                        begin
-                            count_burst<=BURST_LEN+2;
-                        end
-                        
-                        if((count_address>ADDR_LEN)&&(count_burst>BURST_LEN))
-                        begin
-                            state<=READ_DATA_WAITING;
+                            state <= READ_DATA ;
+                            count_address <= 0 ;
+                            count_burst <= 0 ;
                         end
                     end
                     else
                     begin
-                        state <= READ_DATA ;
-                        count_address <= 0 ;
-                        count_burst <= 0 ;
+                       state <= IDLE; 
                     end
                 end
                
                 READ_DATA_WAITING:              //Data read by masterIn port.  Wait until masterIn port response
                 begin
-                    if (rx_done==1)
+                    if (approval_grant==1)
                     begin
-                        state<=IDLE;
+                        if (rx_done==1)
+                        begin
+                            state<=IDLE;
+                        end
+                        else
+                        begin
+                        state<= READ_DATA_WAITING; 
+                        end
                     end
                     else
                     begin
-                      state<= READ_DATA_WAITING; 
+                        state <= IDLE;
                     end
                 end
                 
                 WRITE_DATA:
                 begin
-                    if (slave_ready==1)
-                    begin
-                        if(count_address < ADDR_LEN)
+                    if (approval_grant==1)
+                    begin                   
+                        if (slave_ready==1)
                         begin
-                            tx_address <= address[count_address];
-                            count_address <= count_address+1;
-                        end
-                        else
-                        begin
-                            count_address<=ADDR_LEN+2;
-                        end
-                        
-                        if (burst_num==11'd0)
-                        begin
-                            tx_burst_number<=0;
-                        end
-                        else if (count_burst<BURST_LEN+1)
-                        begin                           
-                            if (count_burst==0)
+                            if(count_address < ADDR_LEN)
                             begin
-                                tx_burst_number<=1;
-                                count_burst<=count_burst+1;
-                            end
-                            else 
-                            begin
-                                tx_burst_number <= burst_num[count_burst-1]; 
-                                count_burst <= count_burst+1;
-                            end
-                        end
-                        else
-                        begin
-                            count_burst <= BURST_LEN+2;
-                        end
-                        
-                        if(count_data<DATA_LEN+1) 
-                        begin                        
-                            if(count_data==0)
-                            begin
-                                master_valid <= 1 ;                  //Data transfer after the master valid signal
+                                tx_address <= address[count_address];
+                                count_address <= count_address+1;
                             end
                             else
                             begin
-                                tx_data<= data[count_data-1] ;
-                            end                      
-                            count_data<= count_data+1;
-                        end  
-                        else
-                        begin
-                            count_data<= DATA_LEN+2;
+                                count_address<=ADDR_LEN+2;
+                            end
+                            
+                            if (burst_num==11'd0)
+                            begin
+                                tx_burst_number<=0;
+                            end
+                            else if (count_burst<BURST_LEN+1)
+                            begin                           
+                                if (count_burst==0)
+                                begin
+                                    tx_burst_number<=1;
+                                    count_burst<=count_burst+1;
+                                end
+                                else 
+                                begin
+                                    tx_burst_number <= burst_num[count_burst-1]; 
+                                    count_burst <= count_burst+1;
+                                end
+                            end
+                            else
+                            begin
+                                count_burst <= BURST_LEN+2;
+                            end
+                            
+                            if(count_data<DATA_LEN) 
+                            begin                        
+                                if(count_data==0)
+                                begin
+                                    master_valid <= 1 ;                  //Data transfer after the master valid signal
+                                    tx_data<= data[count_data] ;
+                                end
+                                else
+                                begin
+                                    tx_data<= data[count_data] ;
+                                end                      
+                                count_data<= count_data+1;
+                            end  
+                            else
+                            begin
+                                count_data<= DATA_LEN+2;
+                            end 
+                            
+                            if((count_address>ADDR_LEN)&&(count_burst>BURST_LEN)&&(count_data>DATA_LEN))
+                            begin
+                                if(burst_num==11'd0)
+                                begin
+                                tx_done<=1;                                 //Over the writing transmission when no burst 
+                                state<=IDLE;
+                                end
+                                else
+                                begin
+                                burst_count <= burst_num;                  
+                                count_data<=0;
+                                state<=WRITE_DATA_BURST;                            
+                                end
+                            end
                         end 
-                        
-                        if((count_address>ADDR_LEN)&&(count_burst>BURST_LEN)&&(count_data>DATA_LEN))
-                        begin
-                            if(burst_num==11'd0)
-                            begin
-                            tx_done<=1;                                 //Over the writing transmission when no burst 
-                            state<=IDLE;
-                            end
-                            else
-                            begin
-                            burst_count <= burst_num;                  
-                            count_data<=0;
-                            state<=WRITE_DATA_BURST;                            
-                            end
-                        end
-                    end 
 
+                        else
+                        begin
+                            state <= WRITE_DATA ;
+                            count_address <= 0 ;
+                            count_burst <= 0 ;
+                        end
+                    end
                     else
                     begin
-                        state <= WRITE_DATA ;
-                        count_address <= 0 ;
-                        count_burst <= 0 ;
+                        state <= IDLE;
                     end
                 end
                 
                 WRITE_DATA_BURST:
                 begin
-                    if(slave_ready==1)
+                    if (approval_grant==1)
                     begin
-                        if(burst_count>1)
+                        if(slave_ready==1)
                         begin
-                            if(count_data<DATA_LEN+1)
+                            if(burst_count>1)
                             begin
-                                if(count_data==0) 
+                                if(count_data<DATA_LEN)
                                 begin
-                                    master_valid <= 1;
-                                    count_data <= count_data+1  ;
-                                end
+                                    if(count_data==0) 
+                                    begin
+                                        master_valid <= 1;
+                                        tx_data <= data[count_data] ;
+                                        count_data <= count_data+1  ;
+                                    end
+                                    else
+                                    begin
+                                        tx_data <= data[count_data] ;
+                                        count_data <= count_data + 1  ;
+                                    end
+                                end  
                                 else
                                 begin
-                                    tx_data <= data[count_data-1] ;
-                                    count_data <= count_data + 1  ;
+                                    count_data<= 0;
+                                    burst_count <=burst_count-1;
                                 end
-                            end  
+                            end
+
                             else
                             begin
-                                count_data<= 0;
-                                burst_count <=burst_count-1;
+                                tx_done<=1;                                 //Over the writing transmission when there is no burst 
+                                state<=IDLE;
                             end
                         end
 
                         else
                         begin
-                            tx_done<=1;                                 //Over the writing transmission when there is no burst 
-                            state<=IDLE;
+                            count_data <= 0;
                         end
                     end
-
                     else
                     begin
-                        count_data <= 0;
+                        state <= IDLE;
                     end
                 end
                 
