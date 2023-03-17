@@ -27,8 +27,6 @@ module master_port #(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DAT
     //Inputs and outputs from master in port
     input slave_valid,                                          //Validate the data transmit by slave
     input rx_data,                                              //Data from the slave
-    input [BURST_LEN-1:0]burst_num,                             //Burst number when reading burst data
-    input [1:0]instruction,                                     //To initialize the transaction
     
     //output reg rx_done,                                       //Output signal to master out when after the rx done
     output  master_ready,                                    //Master ready signal to slave
