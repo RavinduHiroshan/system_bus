@@ -222,6 +222,10 @@ begin
 					data[data_counter] <= rx_data;
 					data_idle          <= 0;
                 end
+                else
+                begin
+                    data_state <= IDLE;
+                end
             end
             default: 
             begin
