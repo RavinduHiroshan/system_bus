@@ -29,8 +29,15 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
     reg [3:0]state = 0;                          //unsigned number = 0; size = 4 bit (0000)
     reg [3:0]addr_state = 0;
     reg [3:0]burst_state = 0;
-    parameter IDLE = 4'd0, WAIT_ARBITOR = 4'd1 , WAIT_SLAVE = 4'd2, WRITE_DATA = 4'd3, READ_DATA = 4'd4,READ_DATA_WAITING=4'd5 ,WRITE_DATA_BURST = 4'd6;
-    parameter ADDR_SENT = 4'd7, BURST_SENT = 4'd8 ;
+    parameter IDLE = 4'd0, 
+    WAIT_ARBITOR = 4'd1 , 
+    WAIT_SLAVE = 4'd2, 
+    WRITE_DATA = 4'd3, 
+    READ_DATA = 4'd4,
+    READ_DATA_WAITING=4'd5,
+    WRITE_DATA_BURST = 4'd6,
+    ADDR_SENT = 4'd7, 
+    BURST_SENT = 4'd8 ;
 
     integer count_slave = 0;
     integer count_slave_wait_time = 0;
@@ -267,117 +274,117 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
                 end               
             endcase 
         end
-
-
-        always @(posedge clk or posedge reset) 
-        begin
-            if(reset==1)
-                begin
-                    count_address<=0;
-                    tx_address<=0;
-                    addr_state <= IDLE;
-                end
-            else
-            case (addr_state)
-                IDLE:
-                begin
-                    count_address<=0;
-                    tx_address<=0;
-                end
-
-                ADDR_SENT:
-                begin
-                    if (approval_grant==1)
-                    begin
-                        if(count_address<ADDR_LEN)
-                            begin
-                                if((count_address==0)&&(slave_ready==1))
-                                    begin                  
-                                        tx_address <= address[count_address];
-                                        count_address <= count_address + 1;
-                                    end
-                                else if(count_address>0)
-                                    begin
-                                        tx_address <= address[count_address];
-                                        count_address <= count_address + 1;
-                                    end
-                            end
-                        else
-                            begin
-                                count_address<=0;
-                                addr_state<=IDLE;
-                            end
-                    end
-                    else
-                    begin
-                        addr_state <= IDLE;
-                    end
-                end
-
-                default:
-                begin
-                    addr_state <= IDLE;
-                end
-            endcase
-        end
-
-        always @(posedge clk or posedge reset) 
-        begin
-            if(reset==1)
-                begin
-                    burst_state <= IDLE;
-                    tx_burst_number<=0;
-                    burst_count<=0;
-                end
-            else
-            case (burst_state)
-                IDLE:
-                begin
-                    tx_burst_number<=0;
-                    burst_count<=0;
-                end
-
-                BURST_SENT:
-                begin
-                    if (approval_grant==1)
-                    begin
-                        if ((burst_num==11'd0)&&(slave_ready==1))
-                            begin
-                                tx_burst_number<=0;
-                                burst_state<=IDLE;
-                            end
-                        else if (burst_num!=11'd0)
-                            begin
-                                if((burst_count==0)&&(slave_ready==1))
-                                begin
-                                    tx_burst_number <= 0;
-                                    burst_count<=burst_count+1;
-                                end
-                                else if ((burst_count>0)&&(burst_count<BURST_LEN+1))
-                                    begin
-                                        tx_burst_number<=burst_num[burst_count-1];
-                                        burst_count<=burst_count+1;
-                                    end
-                                else if (burst_count=>BURST_LEN+1)
-                                    begin
-                                        tx_burst_number<=0;
-                                        burst_state<=IDLE;
-                                        burst_count<=0;
-                                    end
-                            end
-                    end
-                    else
-                    begin
-                        burst_state<=IDLE;
-                    end
-
-                end
-                default:
-                begin
-                  burst_state <= IDLE;
-                end
-            endcase
-        end
     end
 
+
+    always @(posedge clk or posedge reset) 
+    begin
+        if(reset==1)
+            begin
+                count_address<=0;
+                tx_address<=0;
+                addr_state <= IDLE;
+            end
+        else
+        case (addr_state)
+            IDLE:
+            begin
+                count_address<=0;
+                tx_address<=0;
+            end
+
+            ADDR_SENT:
+            begin
+                if (approval_grant==1)
+                begin
+                    if(count_address<ADDR_LEN)
+                        begin
+                            if((count_address==0)&&(slave_ready==1))
+                                begin                  
+                                    tx_address <= address[count_address];
+                                    count_address <= count_address + 1;
+                                end
+                            else if(count_address>0)
+                                begin
+                                    tx_address <= address[count_address];
+                                    count_address <= count_address + 1;
+                                end
+                        end
+                    else
+                        begin
+                            count_address<=0;
+                            addr_state<=IDLE;
+                        end
+                end
+                else
+                begin
+                    addr_state <= IDLE;
+                end
+            end
+
+            default:
+            begin
+                addr_state <= IDLE;
+            end
+        endcase
+    end
+
+    always @(posedge clk or posedge reset) 
+    begin
+        if(reset==1)
+            begin
+                burst_state <= IDLE;
+                tx_burst_number<=0;
+                burst_count<=0;
+            end
+        else
+        case (burst_state)
+            IDLE:
+            begin
+                tx_burst_number<=0;
+                burst_count<=0;
+            end
+
+            BURST_SENT:
+            begin
+                if (approval_grant==1)
+                begin
+                    if ((burst_num==11'd0)&&(slave_ready==1))
+                        begin
+                            tx_burst_number<=0;
+                            burst_state<=IDLE;
+                        end
+                    else if (burst_num!=11'd0)
+                        begin
+                            if((burst_count==0)&&(slave_ready==1))
+                            begin
+                                tx_burst_number <= 0;
+                                burst_count<=burst_count+1;
+                            end
+                            else if ((burst_count>0)&&(burst_count<BURST_LEN+1))
+                                begin
+                                    tx_burst_number<=burst_num[burst_count-1];
+                                    burst_count<=burst_count+1;
+                                end
+                            else if (burst_count=>BURST_LEN+1)
+                                begin
+                                    tx_burst_number<=0;
+                                    burst_state<=IDLE;
+                                    burst_count<=0;
+                                end
+                        end
+                end
+                else
+                begin
+                    burst_state<=IDLE;
+                end
+
+            end
+            default:
+            begin
+                burst_state <= IDLE;
+            end
+        endcase
+    end
+    
  endmodule();
