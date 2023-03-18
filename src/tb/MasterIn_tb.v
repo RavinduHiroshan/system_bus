@@ -6,6 +6,7 @@ reg clk, reset, slave_valid, rx_data;
 //reg tx_done ;
 reg [11:0]burst_num ;
 reg [1:0]instruction ;
+reg approval_grant;
 
 wire rx_done;                                         
 wire master_ready;                                    
@@ -24,11 +25,12 @@ MasterIn MasterIn(
     .rx_done(rx_done),
     .master_ready(master_ready),
     .new_rx(new_rx),
-    .data(data)
+    .data(data),
+    .approval_grant(approval_grant)
 );
 
 initial begin
-    clk = 0;
+    clk = 1;
     forever begin
         #(CLOCK_PERIOD/2)
         clk <= ~clk;
@@ -43,14 +45,15 @@ initial begin
     reset<=1;
 
     #30                        //Normal Read operation
+    reset<=0;
     instruction <= 2'b11;
     burst_num <= 11'd0;
     //tx_done<= 1 ;
 
+    approval_grant <= 1 ;
+
     #30
     slave_valid<=1;
-    
-    #10
     rx_data<=0;
     #10
     rx_data<=1;
@@ -82,27 +85,27 @@ initial begin
 
     #30
     slave_valid<=1;
+    approval_grant <= 1 ;
+
+    rx_data<=0;
+    #10
+    rx_data<=1;
+    #10
+    rx_data<=1;
+    #10
+    rx_data<=1;
+    #10
+    rx_data<=1;
+    #10
+    rx_data<=0;
+    #10
+    rx_data<=1;
+    #10
+    rx_data<=0;
 
     #10
     rx_data<=0;
     #10
-    rx_data<=1;
-    #10
-    rx_data<=1;
-    #10
-    rx_data<=1;
-    #10
-    rx_data<=1;
-    #10
-    rx_data<=0;
-    #10
-    rx_data<=1;
-    #10
-    rx_data<=0;
-
-    #20
-    rx_data<=0;
-    #10
     rx_data<=0;
     #10
     rx_data<=1;
@@ -117,7 +120,7 @@ initial begin
     #10
     rx_data<=1;
 
-    #20
+    #10
     rx_data<=0;
     #10
     rx_data<=1;
