@@ -165,13 +165,14 @@ proc create_root_design { parentCell } {
    CONFIG.Byte_Size {8} \
    CONFIG.EN_SAFETY_CKT {true} \
    CONFIG.Enable_32bit_Address {false} \
-   CONFIG.Read_Width_A {16} \
-   CONFIG.Read_Width_B {16} \
+   CONFIG.Read_Width_A {8} \
+   CONFIG.Read_Width_B {8} \
    CONFIG.Register_PortA_Output_of_Memory_Primitives {true} \
    CONFIG.Use_Byte_Write_Enable {true} \
    CONFIG.Use_RSTA_Pin {true} \
-   CONFIG.Write_Width_A {16} \
-   CONFIG.Write_Width_B {16} \
+   CONFIG.Write_Depth_A {4096} \
+   CONFIG.Write_Width_A {8} \
+   CONFIG.Write_Width_B {8} \
    CONFIG.use_bram_block {Stand_Alone} \
  ] $blk_mem_gen_0
 

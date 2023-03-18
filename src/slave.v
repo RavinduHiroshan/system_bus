@@ -22,11 +22,9 @@ module slave(
 
 	wire [0:11]address;
 	wire [0:7]datain;
-	wire data_ready;
+	wire data_ready = rx_done & write_en;
 	wire [0:7]data;
-	
-
-
+	wire enable = read_en | write_en;
 	slave_port slave_port(
 		.clk(clk),
 		.reset(reset),
@@ -57,12 +55,12 @@ module slave(
 	ram_wrapper ram_wrapper(
 		.BRAM_PORTA_0_addr(address),
 		.BRAM_PORTA_0_clk(clk),
-		.BRAM_PORTA_0_din(datain),
-		.BRAM_PORTA_0_en(),
+		.BRAM_PORTA_0_din(data),
+		.BRAM_PORTA_0_en(enable),
 		.BRAM_PORTA_0_rst(reset),
-		.BRAM_PORTA_0_we(data_ready),
+		.BRAM_PORTA_0_we(rx_done),
 
-		.BRAM_PORTA_0_dout(data),
+		.BRAM_PORTA_0_dout(datain),
 		.rsta_busy_0()
 	);
 

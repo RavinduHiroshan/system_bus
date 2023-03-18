@@ -54,7 +54,7 @@ module slave_port(
 		.data_ready(data_ready),
 		
 		.slave_tx_done(slave_tx_done),
-		.slave_valid(slave_valid)
+		.slave_valid(slave_valid),
 		.tx_data(tx_data)
 		
 	);

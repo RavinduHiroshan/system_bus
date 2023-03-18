@@ -49,11 +49,11 @@ begin
 				else
 				begin 
 					data_state <= IDLE;
-					tx_data <= datain[data_counter];
+					tx_data <= 0;
 					data_counter <= 0;
 					data_idle <= 1;
 					slave_tx_done <= 0;
-					slave_valid <= 1;
+					slave_valid <= 0;
 				end
 			end
 			DATA_TRANSMIT:
