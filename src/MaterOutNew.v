@@ -380,9 +380,4 @@ module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_L
         end
     end
 
-
-
-
-
-
  endmodule();
