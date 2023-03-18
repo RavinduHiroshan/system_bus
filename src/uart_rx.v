@@ -8,7 +8,7 @@
 
 //baudrate  19200 baud UART
 //no parity bits
-//clks_per_bit = (50000000)/(19200) = 2604
+//clks_per_bit = (50 000 000)/(19 200) = 2604
 
 module uart_rx #(parameter clks_per_bit =2604)(
 
@@ -17,10 +17,14 @@ input reset,
 input rx_data,
 
 output reg receive_sig = 0,
-output reg [7:0] data = 0; )
+output reg [7:0] data = 0 );
 
 //States
-parameter idle =0, start_bit=1, data_bits=2, stop=3, finish=4;
+parameter idle   = 0,
+       start_bit = 1,
+       data_bits = 2,
+       stop_bit  = 3,
+       finish    = 4;
 
 reg [2:0] state = idle;
 
@@ -37,7 +41,7 @@ reg rx_data_2 = 1;
 // (It removes problems caused by metastability)
 always @(posedge clk or posedge reset)
 begin
-	if (reset == 1)
+	if (reset)
 	begin
 		rx_data_1 <= 1;
 		rx_data_2 <= 1;
@@ -130,7 +134,7 @@ begin
                 
 				else
 				begin
-					state <= stop_bits;;
+					state <= stop_bit;
 					bit_count <= 0;
 				end
 				clk_count <= 0;
@@ -140,11 +144,11 @@ begin
 		end			
 		
 		//uart stop bit [1]
-		stop :
+		stop_bit :
 		begin
 			if (clk_count < clks_per_bit-1)
 			begin
-				state <= stop;
+				state <= stop_bit;
 				clk_count <= clk_count+1;
 				receive_sig <= 0;	
 			end	

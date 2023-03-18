@@ -38,18 +38,18 @@ integer bit_count = 0;
 always @(posedge clk or posedge reset)
 begin
     if (reset)
-    begin
-        state <= idle; 
+        begin
+            state <= idle; 
 
-        clk_count <= 0;
-        bit_count <= 0;
-        temp_data <= 0;
+            clk_count <= 0;
+            bit_count <= 0;
+            temp_data <= 0;
 
-        tx_data <= 1;
-        tx_busy <= 0;
-        tx_done <= 0;
+            tx_data <= 1;
+            tx_busy <= 0;
+            tx_done <= 0;
 
-    end
+        end
     else 
         case (state)
 
@@ -117,7 +117,7 @@ begin
                 if (bit_count<data_len-1)    //take 8 bits
                 begin
                     state <= data_bits;
-                    bit_count <= bit_count;
+                    bit_count <= bit_count+1;
                 end
                 
                 else
