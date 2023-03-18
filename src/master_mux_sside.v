@@ -35,6 +35,9 @@ module master_mux_sside(
 
 );
 
+always @(*) begin
+    
+end
 
 assign to_slave_master_ready =  (slave_grant == 3'b011) ? to_slave_master_ready_1:
                                 (slave_grant == 3'b101) ? to_slave_master_ready_2:

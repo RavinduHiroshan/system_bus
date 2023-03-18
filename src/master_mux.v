@@ -43,78 +43,76 @@ module master_mux(
     output to_slave_tx_burst_3
 );
 
-wire to_slave_master_ready, 
- to_slave_master_valid,
- to_slave_read_en,
- to_slave_write_en,
- to_slave_tx_address,
- to_slave_tx_data,
- to_slave_tx_burst;
+
+// slave 1 
+
+assign to_slave_master_ready_1  =   ((bus_grant == 2'b01) & (slave_grant == 3'b011)) ? m1_master_ready:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b011)) ? m2_master_ready: 1'b0;
+
+assign to_slave_master_valid_1  =   ((bus_grant == 2'b01) & (slave_grant == 3'b011)) ? m1_master_valid:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b011)) ? m2_master_valid: 1'b0;
+
+assign to_slave_read_en_1       =   ((bus_grant == 2'b01) & (slave_grant == 3'b011)) ? m1_read_en:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b011)) ? m2_read_en: 1'b0;
+
+assign to_slave_write_en_1      =   ((bus_grant == 2'b01) & (slave_grant == 3'b011)) ? m1_write_en:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b011)) ? m2_write_en: 1'b0;
+
+assign to_slave_tx_address_1    =   ((bus_grant == 2'b01) & (slave_grant == 3'b011)) ? m1_tx_address:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b011)) ? m2_tx_address: 1'b0;
+
+assign to_slave_tx_data_1       =   ((bus_grant == 2'b01) & (slave_grant == 3'b011)) ? m1_tx_data:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b011)) ? m2_tx_data: 1'b0;
+
+assign to_slave_tx_burst_1      =   ((bus_grant == 2'b01) & (slave_grant == 3'b011)) ? m1_tx_burst:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b011)) ? m2_tx_burst: 1'b0;
 
 
-master_mux_mside master_mux_mside(
-    .bus_grant(bus_grant),
+// slave 2
 
-    .m1_master_ready(m1_master_ready),
-    .m1_master_valid(m1_master_valid),
-    .m1_read_en(m1_read_en),
-    .m1_write_en(m1_write_en),
-    .m1_tx_address(m1_tx_address),
-    .m1_tx_data(m1_tx_data),
-    .m1_tx_burst(m1_tx_burst),
+assign to_slave_master_ready_2  =   ((bus_grant == 2'b01) & (slave_grant == 3'b101)) ? m1_master_ready:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b101)) ? m2_master_ready: 1'b0;
 
-    .m2_master_ready(m2_master_ready),
-    .m2_master_valid(m2_master_valid),
-    .m2_read_en(m2_read_en),
-    .m2_write_en(m2_write_en),
-    .m2_tx_address(m2_tx_address),
-    .m2_tx_data(m2_tx_data),
-    .m2_tx_burst(m2_tx_burst),
-    
-    .to_slave_master_ready(to_slave_master_ready), 
-    .to_slave_master_valid(to_slave_master_valid),
-    .to_slave_read_en(to_slave_read_en),
-    .to_slave_write_en(to_slave_write_en),
-    .to_slave_tx_address(to_slave_tx_address),
-    .to_slave_tx_data(to_slave_tx_data),
-    .to_slave_tx_burst(to_slave_tx_burst)
-);
-master_mux_sside master_mux_sside(
-    .slave_grant(slave_grant),
+assign to_slave_master_valid_2  =   ((bus_grant == 2'b01) & (slave_grant == 3'b101)) ? m1_master_valid:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b101)) ? m2_master_valid: 1'b0;
 
-    .to_slave_master_ready(to_slave_master_ready), 
-    .to_slave_master_valid(to_slave_master_valid),
-    .to_slave_read_en(to_slave_read_en),
-    .to_slave_write_en(to_slave_write_en),
-    .to_slave_tx_address(to_slave_tx_address),
-    .to_slave_tx_data(to_slave_tx_data),
-    .to_slave_tx_burst(to_slave_tx_burst),
+assign to_slave_read_en_2       =   ((bus_grant == 2'b01) & (slave_grant == 3'b101)) ? m1_read_en:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b101)) ? m2_read_en: 1'b0;
 
-    .to_slave_master_ready_1(to_slave_master_ready_1),
-    .to_slave_master_valid_1(to_slave_master_valid_1),
-    .to_slave_read_en_1(to_slave_read_en_1),
-    .to_slave_write_en_1(to_slave_write_en_1),
-    .to_slave_tx_address_1(to_slave_tx_address_1),
-    .to_slave_tx_data_1(to_slave_tx_data_1),
-    .to_slave_tx_burst_1(to_slave_tx_burst_1),
+assign to_slave_write_en_2      =   ((bus_grant == 2'b01) & (slave_grant == 3'b101)) ? m1_write_en:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b101)) ? m2_write_en: 1'b0;
 
-    .to_slave_master_ready_2(to_slave_master_ready_2),
-    .to_slave_master_valid_2(to_slave_master_valid_2),
-    .to_slave_read_en_2(to_slave_read_en_2),
-    .to_slave_write_en_2(to_slave_write_en_2),
-    .to_slave_tx_address_2(to_slave_tx_address_2),
-    .to_slave_tx_data_2(to_slave_tx_data_2),
-    .to_slave_tx_burst_2(to_slave_tx_burst_2),
+assign to_slave_tx_address_2    =   ((bus_grant == 2'b01) & (slave_grant == 3'b101)) ? m1_tx_address:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b101)) ? m2_tx_address: 1'b0;
 
-    .to_slave_master_ready_3(to_slave_master_ready_3),
-    .to_slave_master_valid_3(to_slave_master_valid_3),
-    .to_slave_read_en_3(to_slave_read_en_3),
-    .to_slave_write_en_3(to_slave_write_en_3),
-    .to_slave_tx_address_3(to_slave_tx_address_3),
-    .to_slave_tx_data_3(to_slave_tx_data_3),
-    .to_slave_tx_burst_3(to_slave_tx_burst_3)
+assign to_slave_tx_data_2       =   ((bus_grant == 2'b01) & (slave_grant == 3'b101)) ? m1_tx_data:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b101)) ? m2_tx_data: 1'b0;
 
-);
+assign to_slave_tx_burst_2      =   ((bus_grant == 2'b01) & (slave_grant == 3'b101)) ? m1_tx_burst:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b101)) ? m2_tx_burst: 1'b0;
 
+
+// slave 3
+
+assign to_slave_master_ready_3  =   ((bus_grant == 2'b01) & (slave_grant == 3'b111)) ? m1_master_ready:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b111)) ? m2_master_ready: 1'b0;
+
+assign to_slave_master_valid_3  =   ((bus_grant == 2'b01) & (slave_grant == 3'b111)) ? m1_master_valid:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b111)) ? m2_master_valid: 1'b0;
+
+assign to_slave_read_en_3       =   ((bus_grant == 2'b01) & (slave_grant == 3'b111)) ? m1_read_en:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b111)) ? m2_read_en: 1'b0;
+
+assign to_slave_write_en_3      =   ((bus_grant == 2'b01) & (slave_grant == 3'b111)) ? m1_write_en:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b111)) ? m2_write_en: 1'b0;
+
+assign to_slave_tx_address_3    =   ((bus_grant == 2'b01) & (slave_grant == 3'b111)) ? m1_tx_address:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b111)) ? m2_tx_address: 1'b0;
+
+assign to_slave_tx_data_3       =   ((bus_grant == 2'b01) & (slave_grant == 3'b111)) ? m1_tx_data:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b111)) ? m2_tx_data: 1'b0;
+
+assign to_slave_tx_burst_3      =   ((bus_grant == 2'b01) & (slave_grant == 3'b111)) ? m1_tx_burst:
+                                    ((bus_grant == 2'b10) & (slave_grant == 3'b111)) ? m2_tx_burst: 1'b0;
     
 endmodule
