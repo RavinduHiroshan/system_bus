@@ -70,7 +70,7 @@ initial begin
             rx_data <= data_stream[num];
             num <= num + 1;
         end
-        else begin
+        else if (num == 8) begin
             master_valid <= 0;
         end
     end
@@ -85,11 +85,19 @@ initial begin
     forever begin
         #(CLOCK_PERIOD)
         if(numa < 12)begin
+            if(numa < 8)begin
+                master_valid <= 1; 
+            end
+            else begin
+                 master_valid <= 0;
+            end
             rx_address <= address_stream[numa];
             numa <= numa + 1;
         end
     end
 end
+
+
 
 initial begin
     reset <= 1;
@@ -99,6 +107,13 @@ initial begin
     reset <= 0;
     read_en <= 0;
     write_en <= 1;
+    #(CLOCK_PERIOD);
+    master_ready <= 0;
+    #(CLOCK_PERIOD*17);
+    master_ready <= 1;
+    read_en <= 1;
+    write_en <= 0;
+    numa <= 0;   
 end
 
 
