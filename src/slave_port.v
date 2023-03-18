@@ -19,12 +19,9 @@ module slave_port(
 	output rx_done,
 	output tx_data,
 
-	input data_ready,
 	input [7:0]datain,
 	output [11:0]address, 
-	output [7:0]data,
-	output read_en_bram,
-	output write_en_bram
+	output [7:0]data
 	);
 
 
@@ -51,7 +48,8 @@ module slave_port(
 		.reset(reset),
 		.master_ready(master_ready),
 		.datain(datain),
-		.data_ready(data_ready),
+		.rx_done(rx_done),
+		.read_en(read_en),
 		
 		.slave_tx_done(slave_tx_done),
 		.slave_valid(slave_valid),

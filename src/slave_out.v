@@ -3,7 +3,8 @@ module slave_out_port (
 	input reset,
 	input master_ready,
 	input [7:0]datain,
-	input data_ready,
+	input rx_done,
+	input read_en,
 	//input slave_valid,
 
 	output reg slave_tx_done,
@@ -13,8 +14,9 @@ module slave_out_port (
 
 reg [3:0]data_state = 0;
 reg data_idle;
+reg [7:0]data;
 
-wire handshake = data_ready & master_ready;
+wire handshake = rx_done & master_ready & read_en;
 
 
 parameter 
@@ -40,6 +42,7 @@ begin
 				if (handshake == 1)
 				begin
 					data_state <= DATA_TRANSMIT;
+					data = datain;
 					tx_data <= datain[0];
 					data_counter <= data_counter + 4'd1;
 					slave_valid <= 1;
@@ -61,7 +64,7 @@ begin
 				if (data_counter < 4'd7)
 					begin
 						data_state <= data_state;
-						tx_data <= datain[data_counter];
+						tx_data <= data[data_counter];
 						data_counter <= data_counter + 4'd1;
 						data_idle <= 0;
 						slave_tx_done <= 0;
@@ -69,7 +72,7 @@ begin
 				else 
 					begin
 						data_state <= IDLE;
-						tx_data <= datain[data_counter];
+						tx_data <= data[data_counter];
 						data_counter <= 0;
 						data_idle <= 0;	
 						slave_tx_done <= 1;				

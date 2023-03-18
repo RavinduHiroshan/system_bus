@@ -22,9 +22,9 @@ module slave(
 
 	wire [0:11]address;
 	wire [0:7]datain;
-	wire data_ready = rx_done & write_en;
 	wire [0:7]data;
 	wire enable = read_en | write_en;
+	wire we = rx_done & write_en;
 	slave_port slave_port(
 		.clk(clk),
 		.reset(reset),
@@ -45,8 +45,6 @@ module slave(
 		.slave_tx_done(slave_tx_done),
 		.rx_done(rx_done),
 		.tx_data(tx_data),
-
-		.data_ready(data_ready),
 		.datain(datain),
 		.address(address),
 		.data(data)
@@ -58,7 +56,7 @@ module slave(
 		.BRAM_PORTA_0_din(data),
 		.BRAM_PORTA_0_en(enable),
 		.BRAM_PORTA_0_rst(reset),
-		.BRAM_PORTA_0_we(rx_done),
+		.BRAM_PORTA_0_we(we),
 
 		.BRAM_PORTA_0_dout(datain),
 		.rsta_busy_0()
