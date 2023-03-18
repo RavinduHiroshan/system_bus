@@ -8,7 +8,7 @@ module arbiter(
     output reg m1_grant,
     output reg m2_grant,
     output reg busy,
-    output reg [1:0]slave_grant, //Signal gose to slave select mux
+    output reg [2:0]slave_grant, //Signal gose to slave select mux
     output reg [1:0]bus_grant   //signal gose to master select mux
 );
     
@@ -30,22 +30,22 @@ module arbiter(
             m2_grant   <= 0;
             busy       <= 0;
             bus_grant  <= 2'b0;
-            slave_grant<= 2'b0;
+            slave_grant<= 3'b0;
             slave_read <= 0;  
         end
         else
         begin
-            if((m1_request == 1'b1) && (state != MASTER1_OCCUPPIED_STATE))
+            if((m1_request == 1'b1) && (state != MASTER1_OCCUPPIED_STATE) && (busy == 0))
             begin
                 state <= MASTER1_OCCUPPIED_STATE;
                 slave_read <= 0; 
             end
-            else if ((m2_request == 1'b1) && (m1_request == 1'b0) && (state != MASTER2_OCCUPPIED_STATE))
+            else if ((m2_request == 1'b1) && (m1_request == 1'b0) && (state != MASTER2_OCCUPPIED_STATE) && (busy == 0))
             begin
                 state <= MASTER2_OCCUPPIED_STATE;
                 slave_read <= 0; 
             end
-            else if ((m2_request == 1'b0) && (m1_request == 1'b0))
+            else if ((m2_request == 1'b0) && (m1_request == 1'b0) && (busy == 0))
             begin 
                 state <= IDLE_STATE;
                 slave_read <= 0; 
@@ -65,18 +65,18 @@ module arbiter(
             m2_grant   <= 0;
             busy       <= 0;
             bus_grant  <= 2'b0;
-            slave_grant<= 2'b0;  
+            slave_grant<= 3'b0;  
         end
         MASTER1_OCCUPPIED_STATE :begin
             m1_grant   <= 1;
             m2_grant   <= 0;
-            busy       <= 1;
             bus_grant  <= 2'b01;
             if ((slave_select == 1) || (slave_read > 0)) begin
-                if(slave_read < 2)
+                if(slave_read < 3)
                     begin
                         slave_grant[slave_read] <= slave_select;
                         slave_read <= slave_read + 1;
+                        busy       <= 1;
                     end
                     else
                     begin
@@ -87,13 +87,13 @@ module arbiter(
         MASTER2_OCCUPPIED_STATE :begin
             m1_grant   <= 0;
             m2_grant   <= 1;
-            busy       <= 1;
             bus_grant  <= 2'b10;
             if ((slave_select == 1) || (slave_read > 0)) begin
-                if(slave_read < 2)
+                if(slave_read < 3)
                     begin
                         slave_grant[slave_read] <= slave_select;
                         slave_read <= slave_read + 1;
+                        busy       <= 1;
                     end
                     else
                     begin
