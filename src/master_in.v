@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
+module master_in#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
     input clk,
     input reset,
     //input tx_done,                                            //Signal from slave after finish a transaction

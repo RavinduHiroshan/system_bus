@@ -370,7 +370,7 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
                                     tx_burst_number<=burst_num[burst_count-1];
                                     burst_count<=burst_count+1;
                                 end
-                            else if (burst_count=>BURST_LEN+1)
+                            else if (burst_count==BURST_LEN+1)
                                 begin
                                     tx_burst_number<=0;
                                     burst_state<=IDLE;
@@ -391,4 +391,4 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
         endcase
     end
     
- endmodule();
+ endmodule

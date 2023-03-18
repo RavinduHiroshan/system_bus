@@ -11,21 +11,21 @@ module master_port#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA
     input slave_ready,                          //From Slave
     input rx_done,                              //From Master In
     
-    output reg approval_request,
-    output reg tx_slave_select,
-    output reg master_ready,
-    output reg master_valid,
-    output reg tx_address,
-    output reg tx_data,
-    output reg tx_burst_number,
-    output reg tx_done,
-    output reg write_en,
-    output reg read_en
+    output  approval_request,
+    output tx_slave_select,
+    output master_ready,
+    output master_valid,
+    output tx_address,
+    output tx_data,
+    output tx_burst_number,
+    output tx_done,
+    output write_en,
+    output read_en,
 
     //input tx_done,                                            //Signal from slave after finish a transaction
     input slave_valid,                                          //Validate the data transmit by slave
     input rx_data,                                              //Data from the slave
-    output reg new_rx,                                          //Output signal about new data 
+    output new_rx                                         //Output signal about new data 
 );
 
 master_out master_out(
