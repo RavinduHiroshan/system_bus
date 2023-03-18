@@ -13,10 +13,11 @@ module slave(
 	output slave_valid,
 	output slave_ready,
 	input rx_address,
-	input rx_data
-	// output slave_tx_done,
-	// output rx_done,
-	// output tx_data,
+	input rx_data,
+	input rx_burst,
+	output slave_tx_done,
+	output rx_done,
+	output tx_data
 	);
 
 	wire [0:11]address;
@@ -41,6 +42,7 @@ module slave(
 
 		.rx_address(rx_address),
 		.rx_data(rx_data),
+		.rx_burst(rx_burst),
 
 		.slave_tx_done(slave_tx_done),
 		.rx_done(rx_done),
@@ -52,7 +54,7 @@ module slave(
 		.data(data)
 	);
 
-	bram_wrapper bram_wrapper(
+	ram_wrapper ram_wrapper(
 		.BRAM_PORTA_0_addr(address),
 		.BRAM_PORTA_0_clk(clk),
 		.BRAM_PORTA_0_din(datain),
