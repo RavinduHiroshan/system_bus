@@ -1,21 +1,4 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Create Date: 01/16/2023 01:57:45 PM
-// Design Name: 
-// Module Name: MasterIn
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: This MasterInput port module is for the reading the data from slave and display in the LCD display
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
 
 module MasterIn#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
     input clk,
