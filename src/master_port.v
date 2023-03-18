@@ -1,4 +1,4 @@
-module master_port(
+module master_port#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_LEN=8, parameter BURST_LEN=12)(
     input clk,
     input reset,
     input [ADDR_LEN-1:0]address,                //From switches
@@ -26,6 +26,46 @@ module master_port(
     input slave_valid,                                          //Validate the data transmit by slave
     input rx_data,                                              //Data from the slave
     output reg new_rx,                                          //Output signal about new data 
+);
+
+master_out master_out(
+    .clk(clk),
+    .reset(reset),
+    .address(address), 
+    .data(data),   
+    .burst_num(burst_num),        
+    .slave_select(slave_select), 
+    .instruction(instruction),                    
+    .approval_grant(approval_grant),                       
+    .busy(busy),                                    
+    .slave_ready(slave_ready),                          
+    .rx_done(rx_done),                              
+    
+    .approval_request(approval_request),
+    .tx_slave_select(tx_slave_select),
+    .master_ready(master_ready),
+    .master_valid(master_valid),
+    .tx_address(tx_address),
+    .tx_data(tx_data),
+    .tx_burst_number(tx_burst_number),
+    .tx_done(tx_done),
+    .write_en(write_en),
+    .read_en(read_en)
+);
+
+master_in master_in(
+     .clk(clk),
+     .reset(reset),
+     .slave_valid(slave_valid),                                       
+     .rx_data(rx_data),                                             
+     .burst_num(burst_num),                            
+     .instruction(instruction),                                    
+     .approval_grant(approval_grant),                      
+    
+      .rx_done(rx_done),              
+      .master_ready(master_ready),              
+      .new_rx(new_rx),                                  
+      .data(data)         
 );
 
 

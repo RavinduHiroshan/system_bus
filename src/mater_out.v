@@ -48,7 +48,7 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
     integer count = 0;
 
 
-    always @ (posedge clk or posedge reset) 
+    always @ (posedge clk) 
     begin
         if(reset==1)
         begin
@@ -106,7 +106,7 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
                                 tx_slave_select<= 1 ;
                                 count <= count+1 ;
                             end
-                            else if ((count==2)&&(count==3))
+                            else if (count<4)
                             begin
                                 tx_slave_select <= slave_select[count_slave];   //Send the address of the slave
                                 count_slave <= count_slave + 1;
@@ -208,7 +208,7 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
                                     count_data<= count_data+1;
                                 end                                   
                             end   
-                        else if (count_data>=DATA_LEN)
+                        else
                             begin
                                 if((burst_num==11'd0)&&(slave_ready==1))
                                     begin
@@ -220,6 +220,7 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
                                     begin
                                         count_data<=0;
                                         state<=WRITE_DATA_BURST;
+                                        tx_done<=1;  
                                         count_burst<=1;
                                     end
                                 count_data<=0;
@@ -250,10 +251,13 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
                                     count_data<= count_data+1;
                                 end
                             else if((count_data==DATA_LEN-1))
-                                    master_valid <= 1 ;
-                                    tx_data<= data[count_data] ;
-                                    count_data<= 0;
-                                    count_burst<=count_burst+1;
+                            begin
+                                tx_done<=1;
+                                master_valid <= 1 ;
+                                tx_data<= data[count_data] ;
+                                count_data<= 0;
+                                count_burst<=count_burst+1;
+                            end                                            
                         end
                         else
                         begin
@@ -277,7 +281,7 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
     end
 
 
-    always @(posedge clk or posedge reset) 
+    always @(posedge clk) 
     begin
         if(reset==1)
             begin
@@ -329,7 +333,7 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
         endcase
     end
 
-    always @(posedge clk or posedge reset) 
+    always @(posedge clk) 
     begin
         if(reset==1)
             begin
