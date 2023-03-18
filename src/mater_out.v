@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-module MasterOut#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_LEN=8, parameter BURST_LEN=12)(
+module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_LEN=8, parameter BURST_LEN=12)(
 
     input clk,
     input reset,
