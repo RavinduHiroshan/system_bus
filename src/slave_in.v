@@ -4,7 +4,6 @@ module slave_in_port(
 	input rx_address,  // rx_address bring address to module seraliy
 	input rx_data,  // rx_data bring data to module seraliy
 	input master_valid, // check validity of master
-    input master_ready,
 	input read_en,
 	input write_en,
     input rx_burst,

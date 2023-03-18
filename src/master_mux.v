@@ -1,5 +1,6 @@
 module master_mux(
-    input bus_grant,
+    input [1:0]bus_grant,
+    input [1:0]slave_grant,
 
     input m1_master_ready,
     input m1_master_valid,
@@ -17,15 +18,40 @@ module master_mux(
     input m2_tx_data,
     input m2_tx_burst,
 
-    output to_slave_master_ready,
-    output to_slave_master_valid,
-    output to_slave_read_en,
-    output to_slave_write_en,
-    output to_slave_tx_address,
-    output to_slave_tx_data,
-    output to_slave_tx_burst
+    output to_slave_master_ready_1,
+    output to_slave_master_valid_1,
+    output to_slave_read_en_1,
+    output to_slave_write_en_1,
+    output to_slave_tx_address_1,
+    output to_slave_tx_data_1,
+    output to_slave_tx_burst_1,
+
+    output to_slave_master_ready_2,
+    output to_slave_master_valid_2,
+    output to_slave_read_en_2,
+    output to_slave_write_en_2,
+    output to_slave_tx_address_2,
+    output to_slave_tx_data_2,
+    output to_slave_tx_burst_2,
+
+    output to_slave_master_ready_3,
+    output to_slave_master_valid_3,
+    output to_slave_read_en_3,
+    output to_slave_write_en_3,
+    output to_slave_tx_address_3,
+    output to_slave_tx_data_3,
+    output to_slave_tx_burst_3
 
 );
+
+wire to_slave_master_ready, 
+to_slave_master_valid,
+to_slave_read_en,
+to_slave_write_en,
+to_slave_tx_address,
+to_slave_tx_data,
+to_slave_tx_burst;
+
 
 assign to_slave_master_ready =  (bus_grant == 2'b01) ? m1_master_ready:
                                 (bus_grant == 2'b10) ? m2_master_ready: 1'b0;

@@ -7,11 +7,13 @@ module slave_out_port (
 	//input slave_valid,
 
 	output reg slave_tx_done,
+	output reg slave_valid,
 	output reg tx_data);
+
 
 reg [3:0]data_state = 0;
 reg data_idle;
-reg slave_valid = 0;
+
 wire handshake = data_ready & master_ready;
 
 
@@ -51,7 +53,7 @@ begin
 					data_counter <= 0;
 					data_idle <= 1;
 					slave_tx_done <= 0;
-					slave_valid <= 0;
+					slave_valid <= 1;
 				end
 			end
 			DATA_TRANSMIT:

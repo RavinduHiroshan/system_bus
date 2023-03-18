@@ -21,7 +21,6 @@ slave_in_port slave_in (
 .rx_address(rx_address),
 .rx_data(rx_data),
 .master_valid(master_valid),
-.master_ready(master_ready),
 .read_en(read_en),
 .write_en(write_en),
 .rx_burst(rx_burst),
@@ -40,32 +39,48 @@ initial begin
     end
 end
 
+integer num = 0;
 
 initial begin
     rx_data <= 0;
-    for (reg i=0; i<8; i=i+1)
-    begin
-        rx_data <= data_stream[i];
+    master_valid <= 0;
+    #(CLOCK_PERIOD*5)
+    forever begin
+        #(CLOCK_PERIOD)
+        if(num < 8)begin
+            master_valid <= 1;
+            rx_data <= data_stream[num];
+            num <= num + 1;
+        end
+        else begin
+            master_valid <= 0;
+        end
     end
 end
 
+integer numa = 0;
 initial begin
     rx_address <= 0;
     #(CLOCK_PERIOD*5)
-    for (reg i=0; i<12; i=i+1)
-    begin
+    forever begin
         #(CLOCK_PERIOD)
-        rx_address <= address_stream[i];
+        if(numa < 12)begin
+            rx_address <= address_stream[numa];
+            numa <= numa + 1;
+        end
     end
-
 end
 
+
 initial begin
-    reset = 0;
+    reset = 1;
     #(CLOCK_PERIOD)
+    reset = 0;
     rx_burst <= 0;
     write_en <= 1;
-    master_valid <= 1;
+    read_en <= 0;
+    
+    rx_burst <= 0;
 
 end
 
