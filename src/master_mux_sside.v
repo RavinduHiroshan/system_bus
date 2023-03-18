@@ -1,4 +1,4 @@
-module master_mux_mside(
+module master_mux_sside(
     input [2:0]slave_grant,
 
     input to_slave_master_ready, 
@@ -7,7 +7,7 @@ module master_mux_mside(
     input to_slave_write_en,
     input to_slave_tx_address,
     input to_slave_tx_data,
-    input to_slave_tx_burst
+    input to_slave_tx_burst,
 
    output to_slave_master_ready_1,
    output to_slave_master_valid_1,

@@ -1,6 +1,5 @@
 module master_mux_mside(
     input [1:0]bus_grant,
-    input [1:0]slave_grant,
 
     input m1_master_ready,
     input m1_master_valid,
