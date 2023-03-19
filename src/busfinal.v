@@ -66,7 +66,38 @@ wire slave_valid_s3,
 slave_ready_s3,
 tx_data_s3,
 
+master_port master_port1(
+     .clk(clk),
+    .reset(reset),
+    .address(),  
+    .data(),           
+    .burst_num(),     
+    .slave_select(),    
+    .instruction(),   
+    .approval_grant(),   
+    .busy(),    
+    .slave_ready(), 
+                             
+    .approval_request(),
+    .tx_slave_select(),
+    .master_ready(),
+    .master_valid(),
+    .tx_address(),
+    .tx_data(),
+    .tx_burst_number(),
+    .tx_done(),
+    .write_en(),
+    .read_en(),
 
+    .slave_valid(),                                          //Validate the data transmit by slave
+    .rx_data(),                                              //Data from the slave
+    .new_rx(),  
+    .rx_done(),
+    .data_input(),
+
+
+
+);
 
 
 
