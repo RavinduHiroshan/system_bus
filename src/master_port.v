@@ -1,15 +1,14 @@
 module master_port#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_LEN=8, parameter BURST_LEN=12)(
     input clk,
     input reset,
-    input [ADDR_LEN-1:0]address,                //From switches
-    input [DATA_LEN-1:0]data,                   //From switches
-    input [BURST_LEN-1:0]burst_num,             //From switches
-    input [SLAVE_LEN-1:0]slave_select,          //From switches
-    input [1:0]instruction,                     //For initialize the transaction
-    input approval_grant,                       //From arbitor
-    input busy,                                 //From arbitor (If other master is occupied busy == 1)    
-    input slave_ready,                          //From Slave
-    input rx_done,                              //From Master In
+    input [ADDR_LEN-1:0]address,               
+    input [DATA_LEN-1:0]data,                   
+    input [BURST_LEN-1:0]burst_num,             
+    input [SLAVE_LEN-1:0]slave_select,          
+    input [1:0]instruction,               
+    input approval_grant,        
+    input busy,                                   
+    input slave_ready,                                                      
     
     output  approval_request,
     output tx_slave_select,
@@ -28,6 +27,8 @@ module master_port#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA
     output new_rx,
     output [7:0]data_input                                        //Output signal about new data 
 );
+
+wire rx_done;
 
 master_out master_out(
     .clk(clk),
