@@ -1,19 +1,31 @@
 module bus(
-    
+    input clk,
+    input reset,
+
+    input slave_select_input_m1,
+    input address_m1,
+    input data_m1,
+    input burst_num_m1,
+    input instruction_m1,
+
+    output tx_done_m1,
+    output new_data_m1,
+    output recevived_m1,
+    output rx_done_m1,
+
+    input slave_select_input_m2,
+    input [0:7]address_m2,
+    input data_m2,
+    input burst_num_m2,
+    input instruction_m2,
+
+    output tx_done_m2,
+    output new_data_m2,
+    output recevived_m2,
+    output rx_done_m2
 );
 
-reg clk, reset, slave_select_input_1;
 
-
-reg instruction_m1,
-address_m1,
-data_m1,
-burst_num_m1,
-
-instruction_m2,
-address_m2,
-data_m2,
-burst_num_m2;
 
 wire master_ready_s3,
 master_valid_s3,
@@ -64,8 +76,6 @@ slave_valid_m1,
 slave_valid_m2,
 rx_data_m1,
 rx_data_m2,
-tx_done_m1,
-tx_done_m2,
 
 master_rx_done_s1,
 master_rx_done_s2,
@@ -79,8 +89,8 @@ master_rx_done_s3;
 arbiter arbiter(
     .clk(clk), // system clock
     .reset(reset), // system reset
-    .m1_request(approval_grant_m1),   // Mster 1 request, it should be high during master 1 transactions.
-    .m2_request(approval_grant_m2),  
+    .m1_request(),   // Mster 1 request, it should be high during master 1 transactions.
+    .m2_request(),  
     .slave_select(slave_select),
 
     .m1_grant(m1_grant),
@@ -96,13 +106,13 @@ master_port master_port1(
     .address(address_m1),  
     .data(data_m1),           
     .burst_num(burst_num_m1),     
-    .slave_select(slave_select_input_1),    
+    .slave_select(slave_select_input_m1),    
     .instruction(instruction_m1),   
-    .approval_grant(approval_grant_m1),   
+    .approval_grant(),   
     .busy(busy),    
-    .slave_ready(slave_ready_m1),                       
-    //.rx_done(rx_done_m1),                             
-    
+    .slave_ready(slave_ready_m1), 
+
+    .rx_done(rx_done_m1),                             
     .approval_request(m1_grant),
     .tx_slave_select(slave_select),
     .master_ready(master_ready_m1),
@@ -127,11 +137,11 @@ master_port master_port2(
     .burst_num(burst_num_m2),     
     .slave_select(slave_select),    
     .instruction(instruction_m2),   
-    .approval_grant(approval_grant_m2),   
+    .approval_grant(),   
     .busy(busy),    
-    .slave_ready(slave_ready_m2),                       
-    //.rx_done(rx_done_m2),                             
-    
+    .slave_ready(slave_ready_m2), 
+
+    .rx_done(rx_done_m2),                             
     .approval_request(m2_grant),
     .tx_slave_select(tx_slave_select_m2),
     .master_ready(master_ready_m2),

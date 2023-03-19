@@ -10,7 +10,7 @@ module master_port#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA
     input busy,                                   
     input slave_ready,                                                      
     
-    output  approval_request,
+    output approval_request,
     output tx_slave_select,
     output master_ready,
     output master_valid,
@@ -25,10 +25,11 @@ module master_port#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA
     input slave_valid,                                          //Validate the data transmit by slave
     input rx_data,                                              //Data from the slave
     output new_rx,
+    output rx_done,
     output [7:0]data_input                                        //Output signal about new data 
 );
 
-wire rx_done;
+
 
 master_out master_out(
     .clk(clk),
