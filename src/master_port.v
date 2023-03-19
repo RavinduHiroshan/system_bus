@@ -25,7 +25,8 @@ module master_port#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA
     //input tx_done,                                            //Signal from slave after finish a transaction
     input slave_valid,                                          //Validate the data transmit by slave
     input rx_data,                                              //Data from the slave
-    output new_rx                                         //Output signal about new data 
+    output new_rx,
+    output [7:0]data_input                                        //Output signal about new data 
 );
 
 master_out master_out(
@@ -65,7 +66,7 @@ master_in master_in(
       .rx_done(rx_done),              
       .master_ready(master_ready),              
       .new_rx(new_rx),                                  
-      .data(data)         
+      .data(data_input)         
 );
 
 
