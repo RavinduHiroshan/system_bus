@@ -9,6 +9,7 @@ module master_mux_old(
     input m1_tx_address,
     input m1_tx_data,
     input m1_tx_burst,
+    input m1_tx_done,
 
     input m2_master_ready,
     input m2_master_valid,
@@ -17,6 +18,7 @@ module master_mux_old(
     input m2_tx_address,
     input m2_tx_data,
     input m2_tx_burst,
+    input m2_tx_done,
     
     output to_slave_master_ready_1,
     output to_slave_master_valid_1,
@@ -25,6 +27,7 @@ module master_mux_old(
     output to_slave_tx_address_1,
     output to_slave_tx_data_1,
     output to_slave_tx_burst_1,
+    output to_slave_tx_done_1,
 
     output to_slave_master_ready_2,
     output to_slave_master_valid_2,
@@ -33,6 +36,7 @@ module master_mux_old(
     output to_slave_tx_address_2,
     output to_slave_tx_data_2,
     output to_slave_tx_burst_2,
+    output to_slave_tx_done_2,
 
     output to_slave_master_ready_3,
     output to_slave_master_valid_3,
@@ -40,7 +44,8 @@ module master_mux_old(
     output to_slave_write_en_3,
     output to_slave_tx_address_3,
     output to_slave_tx_data_3,
-    output to_slave_tx_burst_3
+    output to_slave_tx_burst_3,
+    output to_slave_tx_done_3
 );
 
 wire to_slave_master_ready, 

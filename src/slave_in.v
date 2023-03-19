@@ -217,6 +217,7 @@ begin
                 end
                 else if (burst_counter < burst_num) 
                 begin
+                    // chech weather slave validation?
                     data_state <= DATA_RECIEVE;
                     data_counter       <= data_counter + 4'd1;
 					data[data_counter] <= rx_data;

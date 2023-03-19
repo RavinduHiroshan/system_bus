@@ -9,6 +9,7 @@ module slave(
 
 	input master_ready,
 	input master_valid,
+	input rx_done_in,
 	
 	output slave_valid,
 	output slave_ready,
@@ -16,9 +17,10 @@ module slave(
 	input rx_data,
 	input rx_burst,
 	output slave_tx_done,
-	output rx_done,
+	//output rx_done,
 	output tx_data
 	);
+	wire rx_done;
 
 	wire [0:11]address;
 	wire [0:7]datain;
