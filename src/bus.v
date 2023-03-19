@@ -2,29 +2,28 @@ module bus(
     input clk,
     input reset,
 
-    input slave_select_input_m1,
-    input address_m1,
-    input data_m1,
-    input burst_num_m1,
-    input instruction_m1,
+    input [1:0]slave_select_input_m1,
+    input [11:0]address_m1,
+    input [7:0]data_m1,
+    input [12:0]burst_num_m1,
+    input [1:0]instruction_m1,
 
     output tx_done_m1,
-    output new_data_m1,
+    output [7:0]new_data_m1,
     output recevived_m1,
     output rx_done_m1,
 
-    input slave_select_input_m2,
-    input [0:7]address_m2,
-    input data_m2,
-    input burst_num_m2,
-    input instruction_m2,
+    input [1:0]slave_select_input_m2,
+    input [11:0]address_m2,
+    input [7:0]data_m2,
+    input [12:0]burst_num_m2,
+    input [1:0]instruction_m2,
 
     output tx_done_m2,
-    output new_data_m2,
+    output [7:0]new_data_m2,
     output recevived_m2,
     output rx_done_m2
 );
-
 
 
 wire master_ready_s3,
