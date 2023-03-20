@@ -212,9 +212,13 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
                             begin
                                 if((burst_num==11'd0)&&(slave_ready==1))
                                     begin
-                                        tx_done<=1;                                 //Over the writing transmission when no burst 
-                                        state<=IDLE;
-                                        count_data<=0;
+                                        tx_done<=1; 
+                                                                        //Over the writing transmission when no burst 
+                                         if(tx_done)begin
+                                            state<=IDLE;
+                                            count_data<=0;
+                                         end                                                                                 
+                                        
                                     end
                                 else if((burst_num!=11'd0))
                                     begin
