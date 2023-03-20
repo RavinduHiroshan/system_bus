@@ -308,18 +308,21 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
                     if(count_address<ADDR_LEN)
                         begin
                             if((count_address==0)&&(slave_ready==1))
-                                begin                  
+                                begin
+                                    master_valid <= 1 ;                  
                                     tx_address <= address[count_address];
                                     count_address <= count_address + 1;
                                 end
                             else if(count_address>0)
                                 begin
+                                    master_valid <= 1 ;
                                     tx_address <= address[count_address];
                                     count_address <= count_address + 1;
                                 end
                         end
                     else
                         begin
+                            master_valid <= 0 ;
                             count_address<=0;
                             addr_state<=IDLE;
                         end

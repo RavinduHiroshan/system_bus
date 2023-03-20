@@ -18,22 +18,22 @@ module ram_wrapper
     BRAM_PORTA_0_rst,
     BRAM_PORTA_0_we,
     rsta_busy_0);
-  input [12:0]BRAM_PORTA_0_addr;
+  input [11:0]BRAM_PORTA_0_addr;
   input BRAM_PORTA_0_clk;
   input [7:0]BRAM_PORTA_0_din;
   output [7:0]BRAM_PORTA_0_dout;
   input BRAM_PORTA_0_en;
   input BRAM_PORTA_0_rst;
-  input [1:0]BRAM_PORTA_0_we;
+  input BRAM_PORTA_0_we;
   output rsta_busy_0;
 
-  wire [12:0]BRAM_PORTA_0_addr;
+  wire [11:0]BRAM_PORTA_0_addr;
   wire BRAM_PORTA_0_clk;
-  wire [15:0]BRAM_PORTA_0_din;
-  wire [15:0]BRAM_PORTA_0_dout;
+  wire [7:0]BRAM_PORTA_0_din;
+  wire [7:0]BRAM_PORTA_0_dout;
   wire BRAM_PORTA_0_en;
   wire BRAM_PORTA_0_rst;
-  wire [1:0]BRAM_PORTA_0_we;
+  wire BRAM_PORTA_0_we;
   wire rsta_busy_0;
 
   ram ram_i

@@ -31,7 +31,7 @@ reg [3:0]addr_counter = 4'd0;
 reg [3:0]addr_state = IDLE;
 
 reg [3:0]data_state = IDLE;
-reg [2:0]data_counter = 3'd0;
+reg [3:0]data_counter = 3'd0;
 
 reg [3:0]burst_state = IDLE;
 reg [3:0]burst_bit_counter = 4'd0;
@@ -185,7 +185,7 @@ begin
             end
             DATA_RECIEVE:
             begin
-                if (data_counter < 4'd7)
+                if (data_counter < 4'd8)
 				begin
 					data_counter       <= data_counter + 4'd1;
 					data[data_counter] <= rx_data;
@@ -199,13 +199,16 @@ begin
                         data_counter  <= 0;
 					    data_idle     <= 1;
                     end
+                    else if (addr_state == ADDR_RECIEVE) 
+                    begin
+                        data_state <= DATA_RECIEVE;
+                    end
 					else 		
 					begin
 						data_state <= IDLE;
 						data_idle <= 1;
+                        data_counter <= 0;
 					end			
-					data_counter <= 0;
-					data[data_counter] <= rx_data;
 				end
                 
             end
