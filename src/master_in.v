@@ -91,7 +91,7 @@ module master_in#(parameter DATA_LEN=8, parameter BURST_LEN=12)(
                     begin
                         if(approval_grant==1)
                             begin
-                            if (count_data >DATA_LEN-1)
+                            if (count_data > DATA_LEN-1)
                             begin 
                                 count_data <= 1 ;  
                                 if (count_burst>burst_num)
