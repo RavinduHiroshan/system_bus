@@ -18,7 +18,7 @@ module command_processor #(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, paramet
     //output reg[ADDR_LEN-1:0]address,
     output reg[1:0]data_read_m1,
     output reg[1:0]data_read_m2,
-    output reg[1:0]data_write,                     
+    output reg[1:0]data_write                     
     //output reg[BURST_LEN-1:0]burst_num,             
     //output reg[SLAVE_LEN-1:0]slave_select,          
     //output reg[1:0]instruction, 
@@ -34,25 +34,34 @@ reg [DATA_LEN-1:0]dataint = 8'b0;
 reg [BURST_LEN-1:0]burst_numint = 12'b0;
 reg [SLAVE_LEN-1:0]slave_selectint = 2'b0;
 reg [1:0]instructionint = 2'b0; 
+reg master_select = 0;
 
 reg [1:0]state = 0;
-parameter IDLE = 4'b0, DATASENT = 4'b1 , WAITFINISHWRITE = 4'b2, WAITFINISHREAD = 4'b3; 
+parameter IDLE = 4'd0, DATASENT = 4'd1 , WAITFINISHWRITE = 4'd2, WAITFINISHREAD = 4'd3; 
 
 reg getbutton1 = 1'b0;
 reg getbutton2 = 1'b0;
 reg getbutton3 = 1'b0;
 
-assign [1:0]addressint   = switch1[1:0];
-assign [1:0]dataint      = switch1[3:2];
-assign [1:0]slave_selectint = switch1[5:4];
-assign instructionint  = switch1[6];
-assign master_select = switch1[7];
+always @(posedge clk ) begin
+    addressint[1:0]   <= switch1[1:0];
+    dataint[1:0]      <= switch1[3:2];
+    slave_selectint <= switch1[5:4];
+    instructionint[0]  <= switch1[6];
+    master_select <= switch1[7];
+//    data_read_m1 = new_data_m1[1:0];
+//    data_read_m2 = new_data_m2[1:0];
+    
+end
+
+
 
 
 reg [11:0]address_m1 = 0;
 reg [7:0]data_m1 = 0;
 reg [12:0]burst_num_m1 = 0;
 reg [1:0]slave_select_input_m1 = 0;
+reg [0:1]slave_select_input_m2 = 0;
 reg [1:0]instruction_m1 = 0;
 
 reg [11:0]address_m2 = 0;
@@ -64,16 +73,15 @@ wire
 tx_done_m1,
 new_rx_m1,
 rx_done_m1;
-reg [7:0]new_data_m1;
+wire [7:0]new_data_m1;
 
 wire
 tx_done_m2,
 new_rx_m2,
 rx_done_m2;
-reg [7:0]new_data_m2;
+wire [7:0]new_data_m2;
 
-assign data_read_m1 = new_data_m1[1:0];
-assign data_read_m2 = new_data_m2[1:0];
+
 
 
  
@@ -104,11 +112,11 @@ bus bus(
     .tx_done_m2(tx_done_m2),
     .rx_done_m2(rx_done_m2),
     .new_data_m2(new_data_m2)
-)
+);
 
              
 
-always @(posedge button1)
+always @ (posedge button1)
 begin
     getbutton1 <= 1'b1;
 end
@@ -128,8 +136,8 @@ begin
     if(reset)
     begin
         addressint <= 12'b0;
-        dataint <= 8'b0;
-        burst_numint <= 12'b0;
+        dataint <= 0;
+        burst_numint <= 0;
         slave_selectint <= 2'b0;
         instructionint <= 2'b0;
         address_m1 <= 12'b0;
@@ -146,7 +154,7 @@ begin
         getbutton1 <= 1'b0;
         getbutton2 <= 1'b0;
         getbutton3 <= 1'b0;
-        new_data<=0;
+        data_read_m1<=0;
         state <= IDLE;
     end
     else
@@ -181,8 +189,8 @@ begin
                 master_select<= 1'b0;
                 getbutton2 <= 1'b0;
                 getbutton3 <= 1'b0;
-                new_data_m1 <= new_data_m1;
-                new_data_m2<=new_data_m2;
+                //new_data_m1 <= new_data_m1;
+                //new_data_m2<=new_data_m2;
             end
 
             DATASENT:
@@ -269,7 +277,8 @@ begin
                 if((rx_done_m1)||rx_done_m2)
                 begin
                     state <= IDLE;
-                    new_data<= data;
+                    data_read_m2<= new_data_m1;
+                    data_read_m1<= new_data_m2;
                     address_m1 <= 12'b0;
                     address_m2<=12'b0;
                     data_m1 <=8'b0;
@@ -282,7 +291,7 @@ begin
                     instruction_m2<= 2'b0;
                     master_select<= 1'b0;
                 end
-                else:
+                else
                 begin
                    state <= WAITFINISHREAD; 
                 end

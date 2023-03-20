@@ -1,4 +1,4 @@
-module master_port#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_LEN=8, parameter BURST_LEN=12)(
+module master_port#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_LEN=8, parameter BURST_LEN=13)(
     input clk,
     input reset,
     input [ADDR_LEN-1:0]address,               
