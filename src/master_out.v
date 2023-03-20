@@ -22,8 +22,7 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
     output reg tx_burst_number,
     output reg tx_done,
     output reg write_en,
-    output reg read_en
-    
+    output reg read_en 
  ); 
 
     reg [3:0]state = 0;                          //unsigned number = 0; size = 4 bit (0000)
