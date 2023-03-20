@@ -84,7 +84,6 @@ wire [7:0]new_data_m2;
 
 
 
- 
 bus bus(
     .clk(clk),
     .reset(reset),
@@ -274,7 +273,7 @@ begin
 
             WAITFINISHREAD:
             begin 
-                if((rx_done_m1)||rx_done_m2)
+                if((rx_done_m1==1)||(rx_done_m2==1))
                 begin
                     state <= IDLE;
                     data_read_m2<= new_data_m1;
