@@ -76,7 +76,6 @@ assign data_read_m1 = new_data_m1[1:0];
 assign data_read_m2 = new_data_m2[1:0];
 
 
- 
 bus bus(
     .clk(clk),
     .reset(reset),
@@ -146,7 +145,8 @@ begin
         getbutton1 <= 1'b0;
         getbutton2 <= 1'b0;
         getbutton3 <= 1'b0;
-        new_data<=0;
+        new_data_m1 <= new_data_m1;
+        new_data_m2<=new_data_m2;
         state <= IDLE;
     end
     else
@@ -182,7 +182,7 @@ begin
                 getbutton2 <= 1'b0;
                 getbutton3 <= 1'b0;
                 new_data_m1 <= new_data_m1;
-                new_data_m2<=new_data_m2;
+                new_data_m2 <= new_data_m2;
             end
 
             DATASENT:
@@ -266,7 +266,7 @@ begin
 
             WAITFINISHREAD:
             begin 
-                if((rx_done_m1)||rx_done_m2)
+                if((rx_done_m1==1)||(rx_done_m2==1))
                 begin
                     state <= IDLE;
                     new_data<= data;
