@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 module command_processor_tb;
 
-reg [7:0]data_stream = 8'b10101010;
-
+reg [7:0]data_stream  = 8'b10101010;
+reg [7:0]data_stream2 = 8'b01100010;
 
 
 command_processor command_processor(
@@ -28,6 +28,8 @@ initial begin
     end
 end
 
+//wirte Operation
+
 #(CLOCK_PERIOD)
 reset <=1 ;
 
@@ -39,6 +41,26 @@ button1<= 1 ;
 
 #(CLOCK_PERIOD*2)
 switch1 <= data_stream ;
+
+#(CLOCK_PERIOD*2)
+button2 <= 1;
+
+#(CLOCK_PERIOD*2)
+button1<=0;
+button1<=0;
+
+//Read Operation
+#(CLOCK_PERIOD)
+reset <=1 ;
+
+#(CLOCK_PERIOD)
+reset <=0;
+
+#(CLOCK_PERIOD*2)
+button1<= 1 ;
+
+#(CLOCK_PERIOD*2)
+switch1 <= data_stream2 ;
 
 #(CLOCK_PERIOD*2)
 button2 <= 1;
