@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module command_processor #(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_LEN=8, parameter BURST_LEN=12)(
     input clk,
     input reset,
@@ -33,7 +35,7 @@ reg [ADDR_LEN-1:0]addressint= 12'b0;
 reg [DATA_LEN-1:0]dataint = 8'b0;
 reg [BURST_LEN-1:0]burst_numint = 12'b0;
 reg [SLAVE_LEN-1:0]slave_selectint = 2'b0;
-reg [1:0]instructionint = 2'b0; 
+reg instructionint = 0; 
 reg master_select = 0;
 
 reg [1:0]state = 0;
@@ -46,8 +48,9 @@ reg getbutton3 = 1'b0;
 always @(posedge clk ) begin
     addressint[1:0]   <= switch1[1:0];
     dataint[1:0]      <= switch1[3:2];
+    data_write      <= switch1[3:2];
     slave_selectint <= switch1[5:4];
-    instructionint[0]  <= switch1[6];
+    instructionint  <= switch1[6];
     master_select <= switch1[7];
 //    data_read_m1 = new_data_m1[1:0];
 //    data_read_m2 = new_data_m2[1:0];
@@ -111,17 +114,17 @@ bus bus(
 
              
 
-always @ (posedge button1)
+always @ (negedge button1)
 begin
     getbutton1 <= 1;
 end
 
-always @(posedge button2)
+always @(negedge button2)
 begin
     getbutton2 <= 1;
 end
 
-always @(posedge button3)
+always @(negedge button3)
 begin
     getbutton3<= 1;
 end
@@ -150,6 +153,7 @@ begin
         getbutton2 <= 1'b0;
         getbutton3 <= 1'b0;
         data_read_m1<=0;
+        data_read_m2<=0;
         state <= IDLE;
     end
     else
@@ -160,12 +164,10 @@ begin
                 if (getbutton1==1)
                 begin
                     state <= DATASENT;
-                    getbutton1 <= 1'b0;
                 end
                 else
                 begin
                     state <= IDLE;
-                    getbutton1 <= 1'b0;
                 end
                 addressint <= 12'b0;
                 dataint <= 8'b0;
@@ -182,24 +184,24 @@ begin
                 instruction_m1<= 2'b0;
                 instruction_m2<= 2'b0;
                 master_select<= 1'b0;
-                getbutton2 <= 1'b0;
-                getbutton3 <= 1'b0;
+                // getbutton2 <= getbutton2;
+                // getbutton3 <= getbutton3;
                 //new_data_m1 <= new_data_m1;
                 //new_data_m2<=new_data_m2;
             end
 
             DATASENT:
             begin
-                if (getbutton1==2)
+                if (getbutton2==1)
                 begin
                     if (master_select==1)
                     begin
-                         if (instructionint[0]==1)
+                         if (instructionint==1)
                          begin
                             state <= WAITFINISHREAD;
                             data_m1 <= 0 ;
                          end
-                         else if (instructionint[0]==0)
+                         else if (instructionint==0)
                          begin
                             state <= WAITFINISHWRITE;
                             data_m1 <= dataint ;
@@ -212,12 +214,12 @@ begin
                     end
                     else if(master_select==0)
                     begin
-                        if (instructionint[0]==1)
+                        if (instructionint==1)
                         begin
                             state <= WAITFINISHREAD;
                             data_m2 <= 0 ;
                          end
-                         else if (instructionint[0]==0)
+                         else if (instructionint==0)
                          begin
                             state <= WAITFINISHWRITE;
                             data_m2 <= dataint ;
@@ -228,16 +230,13 @@ begin
                         instruction_m2[0] <= instructionint;
                         instruction_m2[1] <= 1;
                     end
-                    getbutton1 <= 1'b0;
-                    getbutton2 <= 1'b0;
-                    getbutton3 <= 1'b0;
                 end
                 else
                 begin
                     state <= DATASENT;
-                    getbutton1 <= 1'b0;
-                    getbutton2 <= 1'b0;
-                    getbutton3 <= 1'b0;
+                    // getbutton1 <= 1'b0;
+                    // getbutton2 <= 1'b0;
+                    // getbutton3 <= 1'b0;
                 end
             end
 
@@ -257,14 +256,17 @@ begin
                     instruction_m1<= 2'b0;
                     instruction_m2<= 2'b0;
                     master_select<= 1'b0;
+                    getbutton1 <= 1'b0;
+                    getbutton2 <= 1'b0;
+                    getbutton3 <= 1'b0;
                 end
                 else
                 begin
                     state <= WAITFINISHWRITE;
                 end
-                getbutton1 <= 1'b0;
-                getbutton2 <= 1'b0;
-                getbutton3 <= 1'b0;
+                // getbutton1 <= 1'b0;
+                // getbutton2 <= 1'b0;
+                // getbutton3 <= 1'b0;
             end
 
             WAITFINISHREAD:
@@ -285,14 +287,17 @@ begin
                     instruction_m1<= 2'b0;
                     instruction_m2<= 2'b0;
                     master_select<= 1'b0;
+                    getbutton1 <= 1'b0;
+                    getbutton2 <= 1'b0;
+                    getbutton3 <= 1'b0;
                 end
                 else
                 begin
                    state <= WAITFINISHREAD; 
                 end
-                getbutton1 <= 1'b0;
-                getbutton2 <= 1'b0;
-                getbutton3 <= 1'b0;
+                // getbutton1 <= 1'b0;
+                // getbutton2 <= 1'b0;
+                // getbutton3 <= 1'b0;
             end 
             default
             begin

@@ -14,6 +14,7 @@ wire [1:0]data_write;
 
 reg [7:0]data_stream  = 8'b10101010;
 reg [7:0]data_stream2 = 8'b01100010;
+reg [7:0]data_stream3  = 8'b11100010;
 
 command_processor command_processor(
     .clk(clk),
@@ -39,44 +40,59 @@ end
 
 //wirte Operation
 
-#(CLOCK_PERIOD)
-reset <=1 ;
+initial begin
+    #(CLOCK_PERIOD)
+    reset <=1 ;
 
-#(CLOCK_PERIOD)
-reset <=0;
+    #(CLOCK_PERIOD)
+    reset <=0;
 
-#(CLOCK_PERIOD*2)
-button1<= 1 ;
+    #(CLOCK_PERIOD)
+    button1<= 1 ;
+    #(CLOCK_PERIOD)
+    button1<= 0 ;
 
-#(CLOCK_PERIOD*2)
-switch1 <= data_stream ;
 
-#(CLOCK_PERIOD*2)
-button2 <= 1;
+    #(CLOCK_PERIOD*2)
+    switch1 <= data_stream ;
 
-#(CLOCK_PERIOD*12)
-button1<=0;
-button2<=0;
+    #(CLOCK_PERIOD)
+    button2 <= 1;
+    #(CLOCK_PERIOD)
+     button2 <= 0;
 
-//Read Operation
-#(CLOCK_PERIOD)
-reset <=1 ;
+    #(CLOCK_PERIOD*30)
+    button1<=0;
+    button2<=0;
 
-#(CLOCK_PERIOD)
-reset <=0;
+    #(CLOCK_PERIOD*5)
 
-#(CLOCK_PERIOD*2)
-button1<= 1 ;
+    //Read Operation
+    #(CLOCK_PERIOD)
+    //reset <=1 ;
 
-#(CLOCK_PERIOD*2)
-switch1 <= data_stream2 ;
+    #(CLOCK_PERIOD)
+    reset <=0;
 
-#(CLOCK_PERIOD*2)
-button2 <= 1;
+    #(CLOCK_PERIOD)
+    button1<= 1 ;
+     #(CLOCK_PERIOD)
+    button1<= 0 ;
 
-#(CLOCK_PERIOD*12)
-button1<=0;
-button1<=0;
+    #(CLOCK_PERIOD*2)
+    switch1  <= data_stream3 ;
+
+    #(CLOCK_PERIOD)
+    button2 <= 1;
+     #(CLOCK_PERIOD)
+    button2<= 0 ;
+
+    #(CLOCK_PERIOD*30)
+    button1<=0;
+    button1<=0;
+end
+
+
 
 
 endmodule
