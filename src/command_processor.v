@@ -45,17 +45,12 @@ reg getbutton1 = 1'b0;
 reg getbutton2 = 1'b0;
 reg getbutton3 = 1'b0;
 
-always @(posedge clk ) begin
-    addressint[1:0]   <= switch1[1:0];
-    dataint[1:0]      <= switch1[3:2];
-    data_write      <= switch1[3:2];
-    slave_selectint <= switch1[5:4];
-    instructionint  <= switch1[6];
-    master_select <= switch1[7];
-//    data_read_m1 = new_data_m1[1:0];
-//    data_read_m2 = new_data_m2[1:0];
+// always @(posedge clk ) begin
+
+// //    data_read_m1 = new_data_m1[1:0];
+// //    data_read_m2 = new_data_m2[1:0];
     
-end
+// end
 
 
 reg [11:0]address_m1 = 0;
@@ -114,23 +109,29 @@ bus bus(
 
              
 
-always @ (negedge button1)
-begin
-    getbutton1 <= 1;
-end
+// always @ (negedge button1)
+// begin
+//     getbutton1 <= 1;
+// end
 
-always @(negedge button2)
-begin
-    getbutton2 <= 1;
-end
+// always @(negedge button2)
+// begin
+//     getbutton2 <= 1;
+// end
 
-always @(negedge button3)
-begin
-    getbutton3<= 1;
-end
+// always @(negedge button3)
+// begin
+//     getbutton3<= 1;
+// end
 
 always @(posedge clk)
 begin
+    addressint[1:0]   <= switch1[1:0];
+    dataint[1:0]      <= switch1[3:2];
+    data_write      <= switch1[3:2];
+    slave_selectint <= switch1[5:4];
+    instructionint  <= switch1[6];
+    master_select <= switch1[7];
     if(reset)
     begin
         addressint <= 12'b0;
@@ -158,6 +159,18 @@ begin
     end
     else
     begin
+         if(button1 || button2 || button3 == 1'b1)
+        begin
+        if(button1)begin
+             getbutton1 <= 1;
+        end
+        else if (button2) begin
+             getbutton2 <= 1;
+        end
+        else if (button3) begin
+             getbutton3 <= 1;
+        end
+        end
         case(state)
             IDLE :
             begin

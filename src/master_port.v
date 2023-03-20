@@ -31,7 +31,7 @@ module master_port#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA
     output [7:0]data_input                                        //Output signal about new data 
 );
 
-
+assign master_ready = master_ready_1 | master_ready_2;
 
 master_out master_out(
     .clk(clk),
@@ -48,7 +48,7 @@ master_out master_out(
     
     .approval_request(approval_request),
     .tx_slave_select(tx_slave_select),
-    .master_ready(master_ready),
+    .master_ready(master_ready_1),
     .master_valid(master_valid),
     .tx_address(tx_address),
     .tx_data(tx_data),
@@ -68,7 +68,7 @@ master_in master_in(
      .approval_grant(approval_grant),                      
     
       .rx_done(rx_done),              
-      .master_ready(master_ready),              
+      .master_ready(master_ready_2),              
       .new_rx(new_rx),                                  
       .data(data_input)         
 );

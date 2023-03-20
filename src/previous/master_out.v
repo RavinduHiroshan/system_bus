@@ -65,14 +65,6 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
             count_slave_wait_time <= 0;
             count_data <= 0 ;
             count_burst <= 0;
-
-            burst_state <= IDLE;
-            tx_burst_number<=0;
-            burst_count<=0;
-            
-            count_address<=0;
-            tx_address<=0;
-            addr_state <= IDLE;
         end
         else
         begin
@@ -292,9 +284,75 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
                     state <= IDLE;
                 end               
             endcase 
+        end
+    end
 
 
-            case (burst_state)
+    always @(posedge clk) 
+    begin
+        if(reset==1)
+            begin
+                count_address<=0;
+                tx_address<=0;
+                addr_state <= IDLE;
+            end
+        else
+        case (addr_state)
+            IDLE:
+            begin
+                count_address<=0;
+                tx_address<=0;
+            end
+
+            ADDR_SENT:
+            begin
+                if (approval_grant==1)
+                begin
+                    if(count_address<ADDR_LEN)
+                        begin
+                            if((count_address==0)&&(slave_ready==1))
+                                begin
+                                    master_valid <= 1 ;                  
+                                    tx_address <= address[count_address];
+                                    count_address <= count_address + 1;
+                                end
+                            else if(count_address>0)
+                                begin
+                                    master_valid <= 1 ;
+                                    tx_address <= address[count_address];
+                                    count_address <= count_address + 1;
+                                end
+                        end
+                    else
+                        begin
+                            master_valid <= 0 ;
+                            count_address<=0;
+                            addr_state<=IDLE;
+                        end
+                end
+                else
+                begin
+                    addr_state <= IDLE;
+                end
+            end
+
+            default:
+            begin
+                addr_state <= IDLE;
+            end
+        endcase
+    end
+
+    always @(posedge clk) 
+    begin
+        if(reset==1)
+            begin
+                burst_state <= IDLE;
+                tx_burst_number<=0;
+                burst_count<=0;
+            end
+        else
+        case (burst_state)
             IDLE:
             begin
                 tx_burst_number<=0;
@@ -341,73 +399,6 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
                 burst_state <= IDLE;
             end
         endcase
-
-        case (addr_state)
-            IDLE:
-            begin
-                count_address<=0;
-                tx_address<=0;
-            end
-
-            ADDR_SENT:
-            begin
-                if (approval_grant==1)
-                begin
-                    if(count_address<ADDR_LEN)
-                        begin
-                            if((count_address==0)&&(slave_ready==1))
-                                begin
-                                    master_valid <= 1 ;                  
-                                    tx_address <= address[count_address];
-                                    count_address <= count_address + 1;
-                                end
-                            else if(count_address>0)
-                                begin
-                                    master_valid <= 1 ;
-                                    tx_address <= address[count_address];
-                                    count_address <= count_address + 1;
-                                end
-                        end
-                    else
-                        begin
-                            master_valid <= 0 ;
-                            count_address<=0;
-                            addr_state<=IDLE;
-                        end
-                end
-                else
-                begin
-                    addr_state <= IDLE;
-                end
-            end
-
-            default:
-            begin
-                addr_state <= IDLE;
-            end
-        endcase
-        end
     end
-
-
-    // always @(posedge clk) 
-    // begin
-    //     if(reset==1)
-    //         begin
-
-    //         end
-    //     else
-        
-    // end
-
-    // always @(posedge clk) 
-    // begin
-    //     if(reset==1)
-    //         begin
-
-    //         end
-    //     else
-        
-    // end
     
  endmodule
