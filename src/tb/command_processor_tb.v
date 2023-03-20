@@ -15,7 +15,6 @@ wire [1:0]data_write;
 reg [7:0]data_stream  = 8'b10101010;
 reg [7:0]data_stream2 = 8'b01100010;
 
-
 command_processor command_processor(
     .clk(clk),
     .reset(reset),
@@ -27,8 +26,7 @@ command_processor command_processor(
 
     .data_read_m1(data_read_m1),
     .data_read_m2(data_read_m2),
-    .data_write(data_write),                     
-
+    .data_write(data_write)                    
 );
 
 initial begin
@@ -56,9 +54,9 @@ switch1 <= data_stream ;
 #(CLOCK_PERIOD*2)
 button2 <= 1;
 
-#(CLOCK_PERIOD*2)
+#(CLOCK_PERIOD*12)
 button1<=0;
-button1<=0;
+button2<=0;
 
 //Read Operation
 #(CLOCK_PERIOD)
@@ -76,7 +74,7 @@ switch1 <= data_stream2 ;
 #(CLOCK_PERIOD*2)
 button2 <= 1;
 
-#(CLOCK_PERIOD*2)
+#(CLOCK_PERIOD*12)
 button1<=0;
 button1<=0;
 

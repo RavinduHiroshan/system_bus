@@ -55,8 +55,6 @@ always @(posedge clk ) begin
 end
 
 
-
-
 reg [11:0]address_m1 = 0;
 reg [7:0]data_m1 = 0;
 reg [12:0]burst_num_m1 = 0;
@@ -80,8 +78,6 @@ tx_done_m2,
 new_rx_m2,
 rx_done_m2;
 wire [7:0]new_data_m2;
-
-
 
 
 bus bus(
@@ -117,17 +113,17 @@ bus bus(
 
 always @ (posedge button1)
 begin
-    getbutton1 <= 1'b1;
+    getbutton1 <= 1;
 end
 
 always @(posedge button2)
 begin
-    getbutton2 <= 1'b1;
+    getbutton2 <= 1;
 end
 
 always @(posedge button3)
 begin
-    getbutton3<=1'b1;
+    getbutton3<= 1;
 end
 
 always @(posedge clk)
