@@ -224,7 +224,10 @@ module master_out#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA_
                                         tx_done<=1;  
                                         count_burst<=1;
                                     end
-                                count_data<=0;
+                                else 
+                                begin
+                                    tx_data <= 0;                               
+                                end
                             end                         
                     end
                     else

@@ -39,11 +39,13 @@ module arbiter(
             begin
                 state <= MASTER1_OCCUPPIED_STATE;
                 slave_read <= 0; 
+                busy       <= 1;
             end
             else if ((m2_request == 1'b1) && (m1_request == 1'b0) && (state != MASTER2_OCCUPPIED_STATE) && (busy == 0))
             begin
                 state <= MASTER2_OCCUPPIED_STATE;
                 slave_read <= 0; 
+                busy       <= 1;
             end
             else if ((m2_request == 1'b0) && (m1_request == 1'b0) && (busy == 0))
             begin 
