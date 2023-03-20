@@ -10,15 +10,15 @@ input we;
 
 input en;
 
-input [9:0] addr;
+input [11:0] addr;
 
-input [15:0] di;
+input [7:0] di;
 
-output [15:0] dout;
+output [7:0] dout;
 
-reg [15:0] RAM [1023:0];
+reg [7:0] RAM [1023:0];
 
-reg [15:0] dout;
+reg [7:0] dout;
 
 always @(posedge clk)
 
