@@ -58,7 +58,11 @@ read_enable_m2;
 
 wire 
 busy,
+slave_select_m1,
+slave_select_m2,
 slave_select;
+
+assign slave_select = slave_select_m1 | slave_select_m2;
 
 //Arbiter
 wire [2:0]slave_grant;
@@ -148,7 +152,7 @@ master_port master_port1(
     .rx_done_from_slave(rx_done_from_slave_m1),
                              
     .approval_request(approval_request_m1),
-    .tx_slave_select(slave_select),
+    .tx_slave_select(slave_select_m1),
     .master_ready(master_ready_m1),
     .master_valid(master_valid_m1),
     .tx_address(tx_address_m1),
@@ -180,7 +184,7 @@ master_port master_port2(
     .rx_done_from_slave(rx_done_from_slave_m2),  
                              
     .approval_request(approval_request_m2),
-    .tx_slave_select(slave_select),
+    .tx_slave_select(slave_select_m2),
     .master_ready(master_ready_m2),
     .master_valid(master_valid_m2),
     .tx_address(tx_address_m2),
