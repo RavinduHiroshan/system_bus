@@ -53,14 +53,16 @@ module slave(
 		.data(data)
 	);
 
-	nram ram_wrapper(
-		.addr(address),
-		.clk(clk),
-		.di(data),
-		.en(enable),
-		.we(we),
+	ram_wrapper ram_wrapper(
+		.BRAM_PORTA_0_addr(address),
+		.BRAM_PORTA_0_clk(clk),
+		.BRAM_PORTA_0_din(data),
+		.BRAM_PORTA_0_en(enable),
+		.BRAM_PORTA_0_rst(reset),
+		.BRAM_PORTA_0_we(we),
 
-		.dout(datain)
+		.BRAM_PORTA_0_dout(datain),
+		.rsta_busy_0()
 	);
 
     
