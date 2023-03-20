@@ -17,8 +17,9 @@ module slave(
 	input rx_data,
 	input rx_burst,
 	output slave_tx_done,
-	output rx_done,
+	//output rx_done,
 	output tx_data
+
 	);
 	wire rx_done;
 

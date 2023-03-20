@@ -20,8 +20,8 @@ module ram_wrapper
     rsta_busy_0);
   input [12:0]BRAM_PORTA_0_addr;
   input BRAM_PORTA_0_clk;
-  input [15:0]BRAM_PORTA_0_din;
-  output [15:0]BRAM_PORTA_0_dout;
+  input [7:0]BRAM_PORTA_0_din;
+  output [7:0]BRAM_PORTA_0_dout;
   input BRAM_PORTA_0_en;
   input BRAM_PORTA_0_rst;
   input [1:0]BRAM_PORTA_0_we;

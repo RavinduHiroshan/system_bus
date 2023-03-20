@@ -8,7 +8,10 @@ module master_port#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA
     input [1:0]instruction,               
     input approval_grant,        
     input busy,                                   
-    input slave_ready,                                                      
+    input slave_ready, 
+    input slave_valid,                                          //Validate the data transmit by slave
+    input rx_data,   
+    input rx_done_from_slave,                                                   
     
     output approval_request,
     output tx_slave_select,
@@ -22,8 +25,7 @@ module master_port#(parameter SLAVE_LEN=2, parameter ADDR_LEN=12, parameter DATA
     output read_en,
 
     //input tx_done,                                            //Signal from slave after finish a transaction
-    input slave_valid,                                          //Validate the data transmit by slave
-    input rx_data,                                              //Data from the slave
+                                                 //Data from the slave
     output new_rx,
     output rx_done,
     output [7:0]data_input                                        //Output signal about new data 
