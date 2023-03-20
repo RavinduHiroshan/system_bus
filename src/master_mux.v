@@ -45,7 +45,7 @@ module master_mux(
     output to_slave_tx_address_3,
     output to_slave_tx_data_3,
     output to_slave_tx_burst_3,
-    output to_slave_tx_done_3,
+    output to_slave_tx_done_3
 );
 
 
