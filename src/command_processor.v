@@ -57,7 +57,7 @@ reg [11:0]address_m1 = 0;
 reg [7:0]data_m1 = 0;
 reg [12:0]burst_num_m1 = 0;
 reg [1:0]slave_select_input_m1 = 0;
-reg [0:1]slave_select_input_m2 = 0;
+reg [1:0]slave_select_input_m2 = 0;
 reg [1:0]instruction_m1 = 0;
 
 reg [11:0]address_m2 = 0;
