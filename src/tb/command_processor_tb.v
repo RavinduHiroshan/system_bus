@@ -4,9 +4,9 @@ module command_processor_tb;
 parameter CLOCK_PERIOD  = 4'b1010;
 reg clk, reset ;
 reg [7:0] switch1 ;
-reg button1;
-reg button2;
-reg button3;
+reg button1=0;
+reg button2=0;
+reg button3=0;
 
 wire [1:0]data_read_m1;
 wire [1:0]data_read_m2;
@@ -46,15 +46,23 @@ initial begin
 
     #(CLOCK_PERIOD)
     reset <=0;
+    switch1 <= data_stream ;
+    #(CLOCK_PERIOD*4)
+    button1<= 1 ;
+    #(CLOCK_PERIOD)
+    button1<= 0 ;
 
     #(CLOCK_PERIOD)
+    reset <=0;
+    switch1 <= data_stream ;
+    #(CLOCK_PERIOD*4)
     button1<= 1 ;
     #(CLOCK_PERIOD)
     button1<= 0 ;
 
 
     #(CLOCK_PERIOD*2)
-    switch1 <= data_stream ;
+    
 
     #(CLOCK_PERIOD)
     button2 <= 1;
@@ -62,25 +70,18 @@ initial begin
      button2 <= 0;
 
     #(CLOCK_PERIOD*30)
-    button1<=0;
-    button2<=0;
-
-    #(CLOCK_PERIOD*5)
+ 
 
     //Read Operation
-    #(CLOCK_PERIOD)
-    //reset <=1 ;
+  
+    switch1  <= data_stream3 ;
 
-    #(CLOCK_PERIOD)
-    reset <=0;
-
-    #(CLOCK_PERIOD)
+    #(CLOCK_PERIOD*10)
     button1<= 1 ;
      #(CLOCK_PERIOD)
     button1<= 0 ;
 
-    #(CLOCK_PERIOD*2)
-    switch1  <= data_stream3 ;
+    #(CLOCK_PERIOD*10)
 
     #(CLOCK_PERIOD)
     button2 <= 1;

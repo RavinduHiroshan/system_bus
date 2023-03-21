@@ -109,22 +109,8 @@ bus bus(
 
              
 
-// always @ (negedge button1)
-// begin
-//     getbutton1 <= 1;
-// end
 
-// always @(negedge button2)
-// begin
-//     getbutton2 <= 1;
-// end
-
-// always @(negedge button3)
-// begin
-//     getbutton3<= 1;
-// end
-
-always @(posedge clk)
+always @(posedge clk,posedge button1)
 begin
     addressint[1:0]   <= switch1[1:0];
     dataint[1:0]      <= switch1[3:2];
@@ -158,23 +144,10 @@ begin
         state <= IDLE;
     end
     else
-    begin
-         if(button1 || button2 || button3 == 1'b1)
-        begin
-        if(button1)begin
-             getbutton1 <= 1;
-        end
-        else if (button2) begin
-             getbutton2 <= 1;
-        end
-        else if (button3) begin
-             getbutton3 <= 1;
-        end
-        end
         case(state)
             IDLE :
             begin
-                if (getbutton1==1)
+                if (button1==1)
                 begin
                     state <= DATASENT;
                 end
@@ -205,52 +178,46 @@ begin
 
             DATASENT:
             begin
-                if (getbutton2==1)
-                begin
                     if (master_select==1)
                     begin
-                         if (instructionint==1)
+                        if(button2==1)begin
+                            if (instructionint==1)
                          begin
                             state <= WAITFINISHREAD;
-                            data_m1 <= 0 ;
                          end
                          else if (instructionint==0)
                          begin
                             state <= WAITFINISHWRITE;
-                            data_m1 <= dataint ;
                          end
+                        end
                         address_m1 <= addressint ;
                         burst_num_m1 <= burst_numint ;
                         slave_select_input_m1 <= slave_selectint;
                         instruction_m1[0] <= instructionint;
                         instruction_m1[1] <= 1;
+                        data_m1 <= dataint ;
                     end
                     else if(master_select==0)
                     begin
-                        if (instructionint==1)
-                        begin
+                        if(button2==1)begin
+                            if (instructionint==1)
+                         begin
                             state <= WAITFINISHREAD;
-                            data_m2 <= 0 ;
                          end
                          else if (instructionint==0)
                          begin
                             state <= WAITFINISHWRITE;
-                            data_m2 <= dataint ;
+                            
                          end
+                        end
                         address_m2 <= addressint ;
                         burst_num_m2 <= burst_numint ;
                         slave_select_input_m2 <= slave_selectint;
                         instruction_m2[0] <= instructionint;
                         instruction_m2[1] <= 1;
+                        data_m1 <= dataint ;
                     end
-                end
-                else
-                begin
-                    state <= DATASENT;
-                    // getbutton1 <= 1'b0;
-                    // getbutton2 <= 1'b0;
-                    // getbutton3 <= 1'b0;
-                end
+               
             end
 
             WAITFINISHWRITE:
@@ -318,6 +285,6 @@ begin
             end
         endcase
     end
-end
+
 
 endmodule
